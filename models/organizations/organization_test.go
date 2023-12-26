@@ -1,7 +1,7 @@
 package organizations
 
 import (
-	//"go/types"
+	//"go/models"
 	//"strings"
 	"testing"
 )

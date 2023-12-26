@@ -2,9 +2,9 @@ package search
 
 import (
 	"ZendeskChallenge/internal"
-	"ZendeskChallenge/types/organizations"
-	"ZendeskChallenge/types/tickets"
-	"ZendeskChallenge/types/users"
+	"ZendeskChallenge/models/organizations"
+	"ZendeskChallenge/models/tickets"
+	"ZendeskChallenge/models/users"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -86,7 +86,7 @@ func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []
 }
 
 /*
-Generic Search evaluator, used for all types of searching (user, ticket and organizations)
+Generic Search evaluator, used for all models of searching (user, ticket and organizations)
   - Validates the input flags as part of the underlying flags structs complying to a standard interface,
     making it easy to treat flags as a common type
     @return error, DataProcessor: Error if any, and all consolidated search in DataProcessor object

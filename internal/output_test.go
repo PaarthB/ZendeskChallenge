@@ -1,7 +1,7 @@
 package internal
 
 import (
-	//"go/types"
+	//"go/models"
 	//"strings"
 	"testing"
 )

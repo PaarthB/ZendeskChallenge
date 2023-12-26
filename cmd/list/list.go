@@ -1,9 +1,9 @@
 package list
 
 import (
-	"ZendeskChallenge/types/organizations"
-	"ZendeskChallenge/types/tickets"
-	"ZendeskChallenge/types/users"
+	"ZendeskChallenge/models/organizations"
+	"ZendeskChallenge/models/tickets"
+	"ZendeskChallenge/models/users"
 	"github.com/spf13/cobra"
 )
 

@@ -2,9 +2,9 @@ package search
 
 import (
 	"ZendeskChallenge/internal"
-	"ZendeskChallenge/types/organizations"
-	"ZendeskChallenge/types/tickets"
-	"ZendeskChallenge/types/users"
+	"ZendeskChallenge/models/organizations"
+	"ZendeskChallenge/models/tickets"
+	"ZendeskChallenge/models/users"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

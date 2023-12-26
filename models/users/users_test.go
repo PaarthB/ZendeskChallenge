@@ -1,7 +1,7 @@
 package users
 
 import (
-	//"go/types"
+	//"go/models"
 	//"strings"
 	"testing"
 )

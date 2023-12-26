@@ -15,7 +15,7 @@ func TestUserSearch(t *testing.T) {
 	//attributesOverride:
 	//  memory: 128
 	//  prefetchMicrosEnvVars: true
-	//`), string(types.ComponentTypeLambda))),
+	//`), string(models.ComponentTypeLambda))),
 	//		},
 	//	}
 	//
@@ -45,7 +45,7 @@ func TestTicketSearch(t *testing.T) {
 	//				ResourceTypeWorkflow,
 	//				"valid resource",
 	//				strings.NewReader(`{}`),
-	//				string(types.ComponentTypeStepFunctions),
+	//				string(models.ComponentTypeStepFunctions),
 	//			),
 	//		),
 	//	},
@@ -70,7 +70,7 @@ func TestInvalidateResourceDescriptor(t *testing.T) {
 	//			name: "Should return error for an invalid lambda descriptor resource",
 	//			validator: NewValidator(
 	//				NewResource(ResourceTypeDescriptor, "missing attributesOverride", strings.NewReader(`description: "invalid lambda descriptor"
-	//`), string(types.ComponentTypeLambda))),
+	//`), string(models.ComponentTypeLambda))),
 	//		},
 	//	}
 	//
@@ -96,7 +96,7 @@ func TestOrganizationSearch(t *testing.T) {
 	//}{
 	//	{
 	//		name:      "Should return error for an invalid workflow resource",
-	//		validator: NewValidator(NewResource(ResourceTypeDescriptor, "missing attributesOverride", strings.NewReader(`{`), string(types.ComponentTypeLambda))),
+	//		validator: NewValidator(NewResource(ResourceTypeDescriptor, "missing attributesOverride", strings.NewReader(`{`), string(models.ComponentTypeLambda))),
 	//	},
 	//}
 	//
