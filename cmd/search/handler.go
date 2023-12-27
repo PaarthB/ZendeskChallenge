@@ -10,6 +10,7 @@ import (
 	_ "time"
 )
 
+// NewSearchCmd - Parent command setup for all search commands (user, ticket, organization) /*
 func NewSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "search",
@@ -22,6 +23,7 @@ func NewSearchCmd() *cobra.Command {
 	return cmd
 }
 
+// NewUserSearchCmd - Define user search command /*
 func NewUserSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "user",
@@ -36,11 +38,12 @@ func NewUserSearchCmd() *cobra.Command {
 	return cmd
 }
 
+// NewTicketSearchCmd - Define ticket search command /*
 func NewTicketSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ticket",
 		Short: "trigger ticket search",
-		RunE:  triggerTicketSearch,
+		RunE:  triggerTicketSearch, // method to run when ticket search is triggered by user
 	}
 
 	cmd.PersistentFlags().String("name", "", "The name of the field to search for.")
@@ -50,11 +53,12 @@ func NewTicketSearchCmd() *cobra.Command {
 	return cmd
 }
 
+// NewOrgSearchCmd - Define organization search command /*
 func NewOrgSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "organization",
 		Short: "trigger organization search",
-		RunE:  triggerOrgSearch,
+		RunE:  triggerOrgSearch, // method to run when organization search is triggered by user
 	}
 
 	cmd.PersistentFlags().String("name", "", "The name of the field to search for.")

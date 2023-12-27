@@ -1,3 +1,9 @@
+// Package main -
+//
+// - Defines the root command, to which all subcommands are added
+// - Defines log levels for the application based on LOG_LEVEL environment variable.
+//
+
 package main
 
 import (
@@ -9,6 +15,7 @@ import (
 	"strings"
 )
 
+// NewRootCmd - Defines root command, which adds all sub-commands (search & list) using cobra API.
 func NewRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "cli",

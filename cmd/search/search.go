@@ -24,6 +24,12 @@ const (
 	OrganizationsFile = "organizations.json"
 )
 
+/*
+*		Get file data of specific file being queried.
+*		Method behaves differently in test environment to allow reading test files
+*
+*	    @return ([]byte, error): Data content of file and error if reading caused issue (such as fs.PathError)
+ */
 func getFileData(fileName string) ([]byte, error) {
 	isTest, err := strconv.ParseBool(os.Getenv("TEST_ENV"))
 	var prefixPath string
@@ -33,6 +39,12 @@ func getFileData(fileName string) ([]byte, error) {
 	return os.ReadFile(prefixPath + fileName)
 }
 
+/*
+*		Trigger user search. Extracts flag values and delegates processing of query and output evaluation to `process.go` methods
+*
+*	    @return (error): If any error occurs during validation of flags, or evaluation of search
+*		Displays results if no errors
+ */
 func triggerUserSearch(cmd *cobra.Command, args []string) error {
 	var data, _ = getFileData(UsersFile)
 	var orgData, _ = getFileData(OrganizationsFile)
@@ -71,6 +83,12 @@ func triggerUserSearch(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+/*
+*		Trigger ticket search. Extracts flag values and delegates processing of query and output evaluation to `process.go` methods
+*
+*	    @return (error): If any error occurs during validation of flags, or evaluation of search
+*		Displays results if no errors
+ */
 func triggerTicketSearch(cmd *cobra.Command, args []string) error {
 	var data, _ = getFileData(TicketsFile)
 	var orgData, _ = getFileData(OrganizationsFile)
@@ -107,6 +125,12 @@ func triggerTicketSearch(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+/*
+*		Trigger organization search. Extracts flag values and delegates processing of query and output evaluation to `process.go` methods
+*
+*	    @return (error): If any error occurs during validation of flags, or evaluation of search
+*		Displays results if no errors
+ */
 func triggerOrgSearch(cmd *cobra.Command, args []string) error {
 	var data, _ = getFileData(OrganizationsFile)
 	// Declaration of the instance of the struct that we want to fill

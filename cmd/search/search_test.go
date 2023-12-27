@@ -14,6 +14,8 @@ import (
 	"strings"
 )
 
+// Test entrypoint methods that trigger based on the user invoked search query (for user/ticket/org)
+
 func (suite *TestSuite) SetupSuite() {
 	suite.orgRaw, _ = os.ReadFile("testdata/organizations.json")
 	suite.ticketRaw, _ = os.ReadFile("testdata/tickets.json")

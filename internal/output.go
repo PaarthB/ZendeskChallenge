@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// DisplayResults - Displays final result to user, for the command that they ran
 func DisplayResults(cmd *cobra.Command, results DataStore, keyMappings map[string]string) {
 	cmd.Print("======== All results ========\n")
 	if results == nil {

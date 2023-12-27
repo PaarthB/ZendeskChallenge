@@ -58,6 +58,7 @@ type TicketFlags struct {
 	Name  string `validate:"required,oneof=_id external_id type description priority status subject created_at due_at submitter_id assignee_id has_incidents via tags organization_id"`
 }
 
+// SetFiltered - Set the filtered list of Ticket, and return the parent struct (TicketData) they belong to
 func (t *TicketData) SetFiltered(values any) (internal.DataProcessor, error) {
 	var result Ticket
 	jsonString, _ := json.Marshal(values)
@@ -69,10 +70,12 @@ func (t *TicketData) SetFiltered(values any) (internal.DataProcessor, error) {
 	return t, nil
 }
 
+// FetchFiltered - Get a filtered and processed list of Ticket (not raw bytes)
 func (t *TicketData) FetchFiltered() internal.DataStore {
 	return t.Filtered
 }
 
+// FetchProcessed - Get a processed list of Ticket (not raw bytes)
 func (t *TicketData) FetchProcessed() []interface{} {
 	var ticketData []interface{}
 	for _, user := range t.Processed {
@@ -81,10 +84,12 @@ func (t *TicketData) FetchProcessed() []interface{} {
 	return ticketData
 }
 
+// FetchRaw - Get the raw Ticket data
 func (t *TicketData) FetchRaw() []byte {
 	return t.Raw
 }
 
+// Fetch - Get list of Ticket's (usually after by *TicketData#FetchFiltered method) is called
 func (t Ticket) Fetch() []interface{} {
 	var allTickets []interface{}
 	for _, ticket := range t {

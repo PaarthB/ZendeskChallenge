@@ -43,10 +43,12 @@ type OrganizationFlags struct {
 	Name  string `validate:"required,oneof=_id url external_id name domain_names details shared_tickets tickets"`
 }
 
+// FetchFiltered - Get a filtered and processed list of Organization (not raw bytes)
 func (o *OrgData) FetchFiltered() internal.DataStore {
 	return o.Filtered
 }
 
+// SetFiltered - Set the filtered list of Organization, and return the parent struct (OrgData) they belong to
 func (o *OrgData) SetFiltered(values any) (internal.DataProcessor, error) {
 	var result Organization
 	jsonString, _ := json.Marshal(values)
@@ -58,6 +60,7 @@ func (o *OrgData) SetFiltered(values any) (internal.DataProcessor, error) {
 	return o, nil
 }
 
+// FetchProcessed - Get a processed list of Organization (not raw bytes)
 func (o *OrgData) FetchProcessed() []interface{} {
 	var orgData []interface{}
 	for _, user := range o.Processed {
@@ -66,10 +69,12 @@ func (o *OrgData) FetchProcessed() []interface{} {
 	return orgData
 }
 
+// FetchRaw - Get the raw Organization data
 func (o *OrgData) FetchRaw() []byte {
 	return o.Raw
 }
 
+// Fetch - Get list of Organization's (usually after by OrgData#FetchFiltered method) is called
 func (o Organization) Fetch() []interface{} {
 	var allOrgs []interface{}
 	for _, ticket := range o {

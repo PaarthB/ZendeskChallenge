@@ -19,6 +19,10 @@ import (
 	"strconv"
 )
 
+/*
+*
+Add related user entities for each user (tickets, organizations) to each user, in the resulting filtered output
+*/
 func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte) {
 	var allOrgs organizations.Organization
 	var allTickets tickets.Ticket
@@ -54,6 +58,10 @@ func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte)
 	}
 }
 
+/*
+*
+Add related ticket entities for each ticket (user, organizations) to each ticket, in the resulting filtered output
+*/
 func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []byte) {
 	var allOrgs organizations.Organization
 	var allUsers users.User
@@ -90,8 +98,10 @@ func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []
 
 /*
 Generic Search evaluator, used for all models of searching (user, ticket and organizations)
+
   - Validates the input flags as part of the underlying flags structs complying to a standard interface,
     making it easy to treat flags as a common type
+
     @return error, DataProcessor: Error if any, and all consolidated search in DataProcessor object
 */
 func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map[string]string) (internal.DataProcessor, error) {
@@ -112,6 +122,10 @@ func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map
 	return result, nil
 }
 
+/*
+*
+Evaluate the result of each search depending on type of field (underlying data type) being queried
+*/
 func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, data internal.DataProcessor) (internal.DataProcessor, error) {
 	switch fieldKind {
 	case reflect.Int:
@@ -158,6 +172,13 @@ func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, 
 	}
 }
 
+/*
+*
+Parse the raw []bytes based on underlying model being queried, to extract the raw bytes from the common interface
+they implement.
+
+This allows method to be used interchangeably, making code simpler, and single responsibility.
+*/
 func parseByDataType(data interface{}) (any, error) {
 	switch reflect.TypeOf(data).String() {
 	case "*users.UserData":

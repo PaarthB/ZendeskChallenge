@@ -67,6 +67,7 @@ type UserFlags struct {
 	Name  string `validate:"required,oneof=_id alias external_id name signature email phone role locale created_at last_login_at timezone details shared suspended active verified organization_id tags"`
 }
 
+// SetFiltered - Set the filtered list of User, and return the parent struct (UserData) they belong to
 func (u *UserData) SetFiltered(values any) (internal.DataProcessor, error) {
 	var result User
 	jsonString, _ := json.Marshal(values)
@@ -78,10 +79,12 @@ func (u *UserData) SetFiltered(values any) (internal.DataProcessor, error) {
 	return u, nil
 }
 
+// FetchFiltered - Get a filtered and processed list of User (not raw bytes)
 func (u *UserData) FetchFiltered() internal.DataStore {
 	return u.Filtered
 }
 
+// FetchProcessed - Get a processed list of User (not raw bytes)
 func (u *UserData) FetchProcessed() []interface{} {
 	var userData []interface{}
 	for _, user := range u.Processed {
@@ -90,10 +93,12 @@ func (u *UserData) FetchProcessed() []interface{} {
 	return userData
 }
 
+// FetchRaw - Get the raw User data
 func (u *UserData) FetchRaw() []byte {
 	return u.Raw
 }
 
+// Fetch - Get list of users (usually after by UserData#FetchFiltered method) is called
 func (u User) Fetch() []interface{} {
 	var allUsers []interface{}
 	for _, ticket := range u {
