@@ -52,9 +52,11 @@ tickets_0: Ipsum reprehenderit non ea officia labore aute. Qui sit aliquip ipsum
 tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. Deserunt irure deserunt ea nulla cillum ad.
 ```
 ### Testing Instructions
-- Run `make test`
-- All tests are defined within the individual packages themselves. Built by following TDD approach.
-- For test coverage, run `make coverage`, see output below:
+All features (CLI, models, search evaluation/processing) have been thoroughly tested. To run tests follow these steps:
+
+1. Run `make test`
+2. All tests are defined within the individual packages themselves. Built by following TDD approach.
+3. For test coverage, run `make coverage`, see output below:
 ```
 go tool cover -func profile.cov               
 ZendeskChallenge/cmd/list/handler.go:14:                        NewListCmd                      100.0%
