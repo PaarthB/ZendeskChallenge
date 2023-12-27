@@ -17,7 +17,7 @@ func NewListCmd() *cobra.Command {
 		Short: "List searchable fields for Zendesk CLI",
 		Annotations: map[string]string{
 			"args":   "",
-			"output": "Zendesk CLI list command",
+			"output": "Zendesk CLI list command\n",
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_, _ = fmt.Fprintf(cmd.OutOrStdout(), cmd.Annotations["output"])

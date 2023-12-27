@@ -19,7 +19,7 @@ func Test_ExecuteListCommand(t *testing.T) {
 		err := cmd.Execute()
 		assert.Nil(t, err)
 
-		expected := "Zendesk CLI list command"
+		expected := "Zendesk CLI list command\n"
 		assert.True(t, strings.HasPrefix(buffer.String(), expected), "actual is not expected")
 		for key, _ := range users.KeyMappings {
 			assert.True(t, strings.Contains(buffer.String(), key), "user field names are contained in output, for field "+key+"'")
