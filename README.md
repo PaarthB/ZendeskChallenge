@@ -116,4 +116,5 @@ total:                                                          (statements)    
    2. `internal` - For generic methods / interfaces used throughout the application
    3. `model` - For defining the entities and their structures, to operate and process, ability to define separately and extend as needed.
 
+![Build Status](assets/structure.png)
 
