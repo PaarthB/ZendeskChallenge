@@ -15,7 +15,7 @@
 - Then run `make setup`, this will move the `cli` executable to current director
 - To make it easier, a copy of `cli` executable is left in the root directory, for being able to run directly.
 
-#### Listing searchable fields 
+#### Listing searchable fields
 - Run `./cli list` for getting all possible searchable fields
 
 #### Searching
@@ -91,9 +91,12 @@ total:                                                          (statements)    
 ```
 ### Design tradeoffs
 #### Searching through JSON
-- For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) 
-- This query language is designed for keeping memory overhead small, and searches efficient, without linear increase in time as more data is added.
-- Specific queries were formulated, which can be seen in `cmd/search/process.go` to find entries in JSON that match what we are looking for (item in list, or key equals value where value can be of various types like bool/string/integer etc.)
+1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc.) - which makes it a great fit for parsing large amounts of JSON and getting what we need.
+   1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal.
+   2. `JSONPath` parser in go is used from [ojq](https://github.com/ohler55/ojg) installable as `go` module.
+      1. Similar to `XPath` it relies on a tree representation of document, making it much quicker to locate certain items (than say storing them as a list and performing sorting / searching operations like binary search would.)
+2. This query language is designed for keeping memory overhead small, and searches efficient, without linear increase in time as more data is added.
+3. Specific queries were formulated, which can be seen in `cmd/search/process.go` to find entries in JSON that match what we are looking for (item in list, or key equals value where value can be of various types like bool/string/integer etc.)
 
 #### Adding related entities
 1. When searching for users
