@@ -95,7 +95,7 @@ total:                                                          (statements)    
 - `cobra` was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
 
 #### Searching through JSON
-1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc.) - which makes it a great fit for parsing large amounts of JSON and getting what we need.
+1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc. such as comparing if element exists in list or not by comparing to `-1` and also supports searching list based key-value pairs) - which makes it a great fit for parsing large amounts of JSON efficiently, and getting what we need.
    1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal.
    2. `JSONPath` parser in go is used from [ojq](https://github.com/ohler55/ojg) installable as `go` module.
       1. Similar to `XPath` it relies on a tree representation of document, making it much quicker to locate certain items and jump straight to them (than say storing them as a list and performing sorting / searching operations like binary search would.)
@@ -119,5 +119,5 @@ total:                                                          (statements)    
    2. `internal` - For generic methods / interfaces used throughout the application
    3. `models` - For defining the entities and their structures, to operate and process, ability to define separately and extend as needed.
 
-![Build Status](assets/structure.png)
+![Package structure](assets/structure.png)
 
