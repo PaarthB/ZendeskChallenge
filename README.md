@@ -53,7 +53,7 @@ tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. De
 ```
 ### Testing Instructions
 - Run `make test`
-- All tests are defined within the individual packages themselves
+- All tests are defined within the individual packages themselves. Built by following TDD approach.
 - For test coverage, run `make coverage`, see output below:
 ```
 go tool cover -func profile.cov               
@@ -111,8 +111,7 @@ total:                                                          (statements)    
    1. Assignee name and submitter name is shown
    2. Organization name is shown
 
-
-### Package structure
+#### Package structure
 1. Packages have been divided as follows for proper separation of concerns, extensibility and testing
    1. `cmd` - For defining all CLI commands
       1. `list` - For handling list command
