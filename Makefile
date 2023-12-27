@@ -79,7 +79,7 @@ clean:
 
 .PHONY: test
 test:
-	TEST_ENV=true GOOS=$(GOOS) GOARCH=$(GOARCH) go test -coverpkg= ./... -v
+	TEST_ENV=true GOOS=$(GOOS) GOARCH=$(GOARCH) go test -cover -coverpkg=./... -coverprofile=profile.cov ./... -v
 
 
 ###################################################################################################
@@ -156,3 +156,6 @@ release: bundle-release
 
 setup:
 	cp $(BINDIR)/$(EXEC) .
+
+coverage:
+	go tool cover -func profile.cov

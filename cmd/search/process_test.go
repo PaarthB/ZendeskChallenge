@@ -84,12 +84,16 @@ func (suite *TestSuite) TestAddRelatedUserEntities() {
 		expected  map[int]map[string]interface{}
 	}{
 		{
-			title: "Add related ticket entities - nothing to change",
+			title: "Add related ticket entities - entities non-existent",
 			// !! IMPORTANT this test case needs to run before to avoid using the newly set values from next test case
 			users:     suite.userData.Processed,
 			rawTicket: nil,
 			rawOrg:    nil,
 			expected: map[int]map[string]interface{}{
+				707070707: {
+					"OrganizationName": "",
+					"Tickets":          []string(nil),
+				},
 				70: {
 					"OrganizationName": "",
 					"Tickets":          []string(nil),
@@ -114,8 +118,12 @@ func (suite *TestSuite) TestAddRelatedUserEntities() {
 			rawTicket: suite.ticketData.Raw,
 			rawOrg:    suite.orgData.Raw,
 			expected: map[int]map[string]interface{}{
+				707070707: {
+					"OrganizationName": "Isotronic",
+					"Tickets":          []string(nil),
+				},
 				70: {
-					"OrganizationName": "",
+					"OrganizationName": "Isotronic",
 					"Tickets":          []string{"test description 2"},
 				},
 				22: {
@@ -409,7 +417,7 @@ func (suite *TestSuite) TestEvaluateSearchResultByDataType_Success() {
 			count:     1,
 		},
 		{
-			title:     "Multiple result count",
+			title:     "Multiple result count - when searching for users who are suspended",
 			fieldKind: reflect.Bool,
 			value:     strconv.FormatBool(true),
 			name:      "suspended",
