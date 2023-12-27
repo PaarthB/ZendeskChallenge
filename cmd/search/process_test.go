@@ -7,6 +7,7 @@ import (
 	"ZendeskChallenge/models/users"
 	"encoding/json"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/ohler55/ojg/oj"
 	"github.com/stretchr/testify/suite"
 	_ "github.com/stretchr/testify/suite"
@@ -244,25 +245,22 @@ func (suite *TestSuite) TestEvaluateSearch_Error() {
 		errorMessage string
 	}{
 		{
-			title:        "evaluate org search - pass invalid field to search for",
-			data:         &suite.orgData,
-			errorMessage: "Invalid value specified for field --name: 'invalid_field'. Please use 'list' command to find the valid fields which can be searched for",
-			mappings:     organizations.KeyMappings,
-			flags:        organizations.OrganizationFlags{Name: "invalid_field", Value: "121"},
+			title:    "evaluate org search - pass invalid field to search for",
+			data:     &suite.orgData,
+			mappings: organizations.KeyMappings,
+			flags:    organizations.OrganizationFlags{Name: "invalid_field", Value: "121"},
 		},
 		{
-			title:        "evaluate user search - pass invalid field to search for",
-			mappings:     users.KeyMappings,
-			data:         &suite.userData,
-			errorMessage: "Invalid value specified for field --name: 'random field'. Please use 'list' command to find the valid fields which can be searched for",
-			flags:        users.UserFlags{Name: "random field", Value: "74"},
+			title:    "evaluate user search - pass invalid field to search for",
+			mappings: users.KeyMappings,
+			data:     &suite.userData,
+			flags:    users.UserFlags{Name: "random field", Value: "74"},
 		},
 		{
-			title:        "evaluate ticket search - pass invalid field to search for",
-			mappings:     tickets.KeyMappings,
-			errorMessage: "Invalid value specified for field --name: 'useless field'. Please use 'list' command to find the valid fields which can be searched for",
-			data:         &suite.ticketData,
-			flags:        tickets.TicketFlags{Name: "useless field", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
+			title:    "evaluate ticket search - pass invalid field to search for",
+			mappings: tickets.KeyMappings,
+			data:     &suite.ticketData,
+			flags:    tickets.TicketFlags{Name: "useless field", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
 		},
 	}
 
@@ -272,8 +270,8 @@ func (suite *TestSuite) TestEvaluateSearch_Error() {
 			val, err := evaluateSearch(tt.flags, tt.data, tt.mappings)
 			suite.NotNil(err)
 			suite.Nil(val)
-			suite.Equal(tt.errorMessage, err.Error())
-			suite.Nil(tt.data.FetchFiltered()) // Filtered results remain nil as error occurred
+			suite.IsType((validator.ValidationErrors)(nil), err) // Assert correct error type thrown
+			suite.Nil(tt.data.FetchFiltered())                   // Filtered results remain nil as error occurred
 		})
 	}
 

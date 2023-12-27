@@ -2,10 +2,10 @@
 
 ![Build Status](https://raw.githubusercontent.com/dwyl/repo-badges/main/svg/build-passing.svg)
 ![Go version](https://img.shields.io/badge/Go_version-1.21-blue)
-![Code Coverage](https://img.shields.io/badge/Code_coverage-90_percent-b6d7a8)
+![Code Coverage](https://img.shields.io/badge/Code_coverage-85.1_percent-b6d7a8)
 
 ### System Requirements
-- Go `1.21`
+- Go / Golang version `1.21`
 - `make` utility - install with `brew install make` on MacOS.
 - Environment variables for correct usage of go are set, such as `GOROOT`, `GOPATH` and `GO111MODULE=on` (default)
 - Tested on `Mac Sonoma M1`. Should work fine with any `darwin-arm64` architecture.
@@ -13,7 +13,7 @@
 ### Usage Instructions
 - Open command line in root directory of this repo.
 - Run `make build` - this will generate the cli as a binary in `bin/darwin-arm64`
-- Then run `make setup`, this will move the `cli` executable to current director
+- Then run `make setup`, this will move the `cli` executable to current directory
 - To make it easier, a copy of `cli` executable is left in the root directory, for being able to run directly.
 
 
@@ -21,8 +21,8 @@
 - Run `./cli list` for getting all possible searchable fields
 
 #### Searching
-- Searching cane be done via `./cli search` command. Type `--help` to see usage
-- To search for empty fields, don't specify `--value` flag, as the CLI then treats it as empty string (**NOTE**: be careful they are empty strings, for values that require integers, it will still error saying you need to specify int value, as empty value cannot be int)
+- Searching can be done via `./cli search` command. Type `--help` to see usage
+- To search for empty fields, don't specify `--value` flag, as the CLI then treats it as empty string (**NOTE**: be careful they are empty strings, for values that require integers, it will still display error message, saying you need to specify int value, as empty value cannot be int)
 - Eg: `./cli search user --name _id --value 1` searches for user with `_id` attribute as `1`, shows output:
 ```
 ======== All results ========
@@ -55,8 +55,7 @@ tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. De
 
 #### Gotchas / Catches
 1. ***Searching for list based items (`tags`, `domain_names` etc.)***
-   1. These are searchable by specifying one single value only, not a list of values. Eg. if you want to search users, where one of the tags is `abc` you would run the command:
-      `./cli search user --name tags --value abc`
+   1. These are searchable by specifying one single value only, not a list of values. Eg. if you want to search users, where one of the tags is `abc` you would run the command: `./cli search user --name tags --value abc`
 2. ***Specifying values with spaces***:
    1. These need to be enclosed with double quotes like:
       `./cli search user --name tags --value "abc def"` if the tag you are searching for is called `abc def` 
@@ -64,59 +63,61 @@ tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. De
    1. Searching for boolean values works in a few ways, the value can be:
       1. True values: `1`, `t`, `T`, `TRUE`, `true`, `True` 
       2. False values: `0`, `f`, `F`, `FALSE`, `false`, `False`
+   2. Example in the following command the value being searched for is `false`, and can be modified to use either one of `0`, `f`, `F`, `FALSE`, `False` as well: `./cli search user --name suspended --value false`. Same goes for `true` value as well.
 
 ### Testing Instructions
-All features (CLI, models, search evaluation/processing, internal utilities) have been thoroughly tested. To run tests follow these steps:
+All features (CLI, models, search evaluation/processing, internal utilities) have been thoroughly tested.  All tests are defined within the individual packages themselves. To run tests follow these steps:
 
 1. Run `make test`
-2. All tests are defined within the individual packages themselves. Built by following TDD approach.
-3. For test coverage, run `make coverage`, see output below:
+2. For test coverage, run `make coverage`, see output below:
 ```
-go tool cover -func profile.cov               
+go tool cover -func profile.cov
 ZendeskChallenge/cmd/list/handler.go:14:                        NewListCmd                      100.0%
 ZendeskChallenge/cmd/list/list.go:15:                           fieldList                       100.0%
-ZendeskChallenge/cmd/search/handler.go:13:                      NewSearchCmd                    100.0%
-ZendeskChallenge/cmd/search/handler.go:25:                      NewUserSearchCmd                100.0%
-ZendeskChallenge/cmd/search/handler.go:39:                      NewTicketSearchCmd              100.0%
-ZendeskChallenge/cmd/search/handler.go:53:                      NewOrgSearchCmd                 100.0%
-ZendeskChallenge/cmd/search/process.go:22:                      addRelatedUserEntities          100.0%
-ZendeskChallenge/cmd/search/process.go:57:                      addRelatedTicketEntities        100.0%
-ZendeskChallenge/cmd/search/process.go:97:                      evaluateSearch                  91.7%
-ZendeskChallenge/cmd/search/process.go:115:                     evaluateSearchResultByDataType  85.7%
-ZendeskChallenge/cmd/search/process.go:161:                     parseByDataType                 100.0%
-ZendeskChallenge/cmd/search/search.go:27:                       getFileData                     100.0%
-ZendeskChallenge/cmd/search/search.go:36:                       triggerUserSearch               73.9%
-ZendeskChallenge/cmd/search/search.go:74:                       triggerTicketSearch             73.9%
-ZendeskChallenge/cmd/search/search.go:110:                      triggerOrgSearch                68.4%
-ZendeskChallenge/internal/output.go:14:                         DisplayResults                  100.0%
-ZendeskChallenge/models/organizations/organizations.go:46:      FetchFiltered                   100.0%
-ZendeskChallenge/models/organizations/organizations.go:50:      SetFiltered                     85.7%
-ZendeskChallenge/models/organizations/organizations.go:61:      FetchProcessed                  100.0%
-ZendeskChallenge/models/organizations/organizations.go:69:      FetchRaw                        100.0%
-ZendeskChallenge/models/organizations/organizations.go:73:      Fetch                           100.0%
-ZendeskChallenge/models/tickets/tickets.go:61:                  SetFiltered                     85.7%
-ZendeskChallenge/models/tickets/tickets.go:72:                  FetchFiltered                   100.0%
-ZendeskChallenge/models/tickets/tickets.go:76:                  FetchProcessed                  100.0%
-ZendeskChallenge/models/tickets/tickets.go:84:                  FetchRaw                        100.0%
-ZendeskChallenge/models/tickets/tickets.go:88:                  Fetch                           100.0%
-ZendeskChallenge/models/users/users.go:70:                      SetFiltered                     85.7%
-ZendeskChallenge/models/users/users.go:81:                      FetchFiltered                   100.0%
-ZendeskChallenge/models/users/users.go:85:                      FetchProcessed                  100.0%
-ZendeskChallenge/models/users/users.go:93:                      FetchRaw                        100.0%
-ZendeskChallenge/models/users/users.go:97:                      Fetch                           100.0%
-total:                                                          (statements)                    90.0%
+ZendeskChallenge/cmd/search/handler.go:14:                      NewSearchCmd                    100.0%
+ZendeskChallenge/cmd/search/handler.go:27:                      NewUserSearchCmd                100.0%
+ZendeskChallenge/cmd/search/handler.go:42:                      NewTicketSearchCmd              100.0%
+ZendeskChallenge/cmd/search/handler.go:57:                      NewOrgSearchCmd                 100.0%
+ZendeskChallenge/cmd/search/process.go:25:                      addRelatedUserEntities          100.0%
+ZendeskChallenge/cmd/search/process.go:63:                      addRelatedTicketEntities        100.0%
+ZendeskChallenge/cmd/search/process.go:105:                     evaluateSearch                  91.7%
+ZendeskChallenge/cmd/search/process.go:126:                     evaluateSearchResultByDataType  85.7%
+ZendeskChallenge/cmd/search/process.go:179:                     parseByDataType                 100.0%
+ZendeskChallenge/cmd/search/search.go:33:                       getFileData                     100.0%
+ZendeskChallenge/cmd/search/search.go:48:                       triggerUserSearch               73.9%
+ZendeskChallenge/cmd/search/search.go:92:                       triggerTicketSearch             73.9%
+ZendeskChallenge/cmd/search/search.go:134:                      triggerOrgSearch                68.4%
+ZendeskChallenge/internal/output.go:15:                         DisplayResults                  23.5%
+ZendeskChallenge/models/organizations/organizations.go:47:      FetchFiltered                   100.0%
+ZendeskChallenge/models/organizations/organizations.go:52:      SetFiltered                     85.7%
+ZendeskChallenge/models/organizations/organizations.go:64:      FetchProcessed                  100.0%
+ZendeskChallenge/models/organizations/organizations.go:73:      FetchRaw                        100.0%
+ZendeskChallenge/models/organizations/organizations.go:78:      Fetch                           100.0%
+ZendeskChallenge/models/tickets/tickets.go:62:                  SetFiltered                     85.7%
+ZendeskChallenge/models/tickets/tickets.go:74:                  FetchFiltered                   100.0%
+ZendeskChallenge/models/tickets/tickets.go:79:                  FetchProcessed                  100.0%
+ZendeskChallenge/models/tickets/tickets.go:88:                  FetchRaw                        100.0%
+ZendeskChallenge/models/tickets/tickets.go:93:                  Fetch                           100.0%
+ZendeskChallenge/models/users/users.go:71:                      SetFiltered                     85.7%
+ZendeskChallenge/models/users/users.go:83:                      FetchFiltered                   100.0%
+ZendeskChallenge/models/users/users.go:88:                      FetchProcessed                  100.0%
+ZendeskChallenge/models/users/users.go:97:                      FetchRaw                        100.0%
+ZendeskChallenge/models/users/users.go:102:                     Fetch                           100.0%
+total:                                                          (statements)                    85.1%
 ```
+
 ### Design tradeoffs
 #### Building CLI Interface
 - [`cobra`](https://github.com/spf13/cobra) was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
 
 #### Searching through JSON
-1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc. such as comparing if element exists in list or not by comparing to `-1` and also supports searching list based key-value pairs) - which makes it a great fit for parsing large amounts of JSON efficiently, and getting what we need.
-   1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal.
+1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/), it follows `Goessner` based implementation. Some other benefits being keeping the code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc. such as comparing if element exists in list or not by comparing to `-1` and also supports searching list based key-value pairs) - which makes it a great fit for parsing large amounts of JSON efficiently, and getting what we need.
+   1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal. This becomes even more complex when searching for values which are list-format (`key=[. . . ]`, i.e. value is a list)
    2. `JSONPath` parser in go is used from [ojq](https://github.com/ohler55/ojg) installable as `go` module.
       1. Similar to `XPath` it relies on a tree representation of document, making it much quicker to locate certain items and jump straight to them (than say storing them as a list and performing sorting / searching operations like binary search would.)
-2. This query language is designed for keeping memory overhead small, and searches efficient, without linear increase in time as more data is added.
-3. Specific queries were formulated, which can be seen in `cmd/search/process.go` to find entries in JSON that match what we are looking for (item in list, or key equals value where value can be of various types like bool/string/integer etc.)
+2. This query language is designed for keeping memory overhead small, and searches efficient, without linear increase in time (as JSON is converted to native objects which provide quicker lookup) as more data is added.
+3. Also to avoid memory saturation, JSON is loaded once for subsequent parsing again and again, rather than load JSON everytime you need it (for getting related entities, for retrieving data again etc.)
+4. Specific queries were formulated, which can be seen in `cmd/search/process.go` to find entries in JSON that match what we are looking for (item in list which is O(1) lookup, or key equals value where value can be of various types like bool/string/integer etc.)
 
 #### Adding related entities
 1. When searching for users

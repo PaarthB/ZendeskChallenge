@@ -20,9 +20,8 @@ import (
 )
 
 /*
-*
-Add related user entities for each user (tickets, organizations) to each user, in the resulting filtered output
-*/
+*	Add related user entities for each user (tickets, organizations) to each user, in the resulting filtered output
+ */
 func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte) {
 	var allOrgs organizations.Organization
 	var allTickets tickets.Ticket
@@ -59,9 +58,8 @@ func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte)
 }
 
 /*
-*
-Add related ticket entities for each ticket (user, organizations) to each ticket, in the resulting filtered output
-*/
+*	Add related ticket entities for each ticket (user, organizations) to each ticket, in the resulting filtered output
+ */
 func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []byte) {
 	var allOrgs organizations.Organization
 	var allUsers users.User
@@ -97,21 +95,20 @@ func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []
 }
 
 /*
-Generic Search evaluator, used for all models of searching (user, ticket and organizations)
-
-  - Validates the input flags as part of the underlying flags structs complying to a standard interface,
-    making it easy to treat flags as a common type
-
-    @return error, DataProcessor: Error if any, and all consolidated search in DataProcessor object
-*/
+* Generic Search evaluator, used for all models of searching (user, ticket and organizations)
+*
+*  - Validates the input flags as part of the underlying flags structs complying to a standard interface,
+*    making it easy to treat flags as a common type
+*
+*    @return error, DataProcessor: Error if any, and all consolidated search in DataProcessor object
+ */
 func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map[string]string) (internal.DataProcessor, error) {
 	validate := validator.New()
 	var name = reflect.ValueOf(flags).FieldByName("Name").String()
 	var value = reflect.ValueOf(flags).FieldByName("Value").String()
 	err := validate.Struct(flags)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Invalid value specified for field --name: '%v'. "+
-			"Please use 'list' command to find the valid fields which can be searched for", name))
+		return nil, err
 	}
 	val := reflect.ValueOf(data.FetchProcessed()[0]) // Get property value from one object to find field type
 	field := val.FieldByName(mappings[name])
@@ -124,8 +121,8 @@ func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map
 
 /*
 *
-Evaluate the result of each search depending on type of field (underlying data type) being queried
-*/
+*	Evaluate the result of each search depending on type of field (underlying data type) being queried
+ */
 func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, data internal.DataProcessor) (internal.DataProcessor, error) {
 	switch fieldKind {
 	case reflect.Int:
@@ -174,11 +171,11 @@ func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, 
 
 /*
 *
-Parse the raw []bytes based on underlying model being queried, to extract the raw bytes from the common interface
-they implement.
-
-This allows method to be used interchangeably, making code simpler, and single responsibility.
-*/
+*	Parse the raw []bytes based on underlying model being queried, to extract the raw bytes from the common interface
+*	they implement.
+*
+*	This allows method to be used interchangeably, making code simpler, and single responsibility.
+ */
 func parseByDataType(data interface{}) (any, error) {
 	switch reflect.TypeOf(data).String() {
 	case "*users.UserData":
