@@ -1,0 +1,93 @@
+[
+  {
+    "_id": "test_id",
+    "url": "http://initech.zendesk.com/api/v2/tickets/20615fe1-765b-4ff5-b4f6-ea42dcc8cac3.json",
+    "external_id": "6eb322af-abdb-4f71-a0a2-f7f6fbe72815",
+    "created_at": "2016-03-25T05:33:29 -11:00",
+    "type": "task",
+    "subject": "A Problem in Gambia",
+    "description": "test description 2",
+    "priority": "high",
+    "status": "pending",
+    "submitter_id": 1111,
+    "assignee_id": 41111113,
+    "organization_id": 9888,
+    "tags": [
+      "Washington",
+      "Wyoming",
+      "Ohio",
+      "Pennsylvania"
+    ],
+    "has_incidents": false,
+    "due_at": "2016-08-22T04:49:19 -10:00",
+    "via": "web"
+  },
+  {
+    "_id": "20615fe1-765b-4ff5-b4f6-ea42dcc8cac3",
+    "url": "http://initech.zendesk.com/api/v2/tickets/20615fe1-765b-4ff5-b4f6-ea42dcc8cac3.json",
+    "external_id": "6eb322af-abdb-4f71-a0a2-f7f6fbe72815",
+    "created_at": "2016-03-25T05:33:29 -11:00",
+    "type": "task",
+    "subject": "A Problem in Gambia",
+    "description": "test description 1",
+    "priority": "high",
+    "status": "pending",
+    "submitter_id": 22,
+    "assignee_id": 43,
+    "organization_id": 102,
+    "tags": [
+      "Washington",
+      "Wyoming",
+      "Ohio",
+      "Pennsylvania"
+    ],
+    "has_incidents": false,
+    "due_at": "2016-08-22T04:49:19 -10:00",
+    "via": "web"
+  },
+  {
+    "_id": "3ff0599a-fe0f-4f8f-ac31-e2636843bcea",
+    "url": "http://initech.zendesk.com/api/v2/tickets/3ff0599a-fe0f-4f8f-ac31-e2636843bcea.json",
+    "external_id": "dfc05543-cdf7-4165-8aab-f3a74b29b544",
+    "created_at": "2016-05-15T12:59:16 -10:00",
+    "type": "question",
+    "subject": "A Problem in Antigua and Barbuda",
+    "description": "test description 2",
+    "priority": "low",
+    "status": "closed",
+    "submitter_id": 70,
+    "organization_id": 102,
+    "tags": [
+      "American Samoa",
+      "Northern Mariana Islands",
+      "Puerto Rico",
+      "Idaho"
+    ],
+    "has_incidents": false,
+    "due_at": "2016-08-14T08:09:39 -10:00",
+    "via": "voice"
+  },
+  {
+    "_id": "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7",
+    "url": "http://initech.zendesk.com/api/v2/tickets/7c67b6ed-6776-4065-bd4a-f2d9d12c33b7.json",
+    "external_id": "a429a380-84db-447b-b50f-02c09165dab2",
+    "created_at": "2016-07-03T03:05:56 -10:00",
+    "type": "problem",
+    "subject": "A Nuisance in Greenland",
+    "description": "test description 3",
+    "priority": "normal",
+    "status": "solved",
+    "submitter_id": 75,
+    "assignee_id": 74,
+    "organization_id": 107,
+    "tags": [
+      "Oklahoma",
+      "Louisiana",
+      "Massachusetts",
+      "New York"
+    ],
+    "has_incidents": false,
+    "due_at": "2016-08-17T06:25:43 -10:00",
+    "via": "chat"
+  }
+]
