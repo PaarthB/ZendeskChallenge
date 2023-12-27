@@ -92,7 +92,7 @@ total:                                                          (statements)    
 ```
 ### Design tradeoffs
 #### Building CLI Interface
-- `cobra` was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
+- [`cobra`](https://github.com/spf13/cobra) was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
 
 #### Searching through JSON
 1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc. such as comparing if element exists in list or not by comparing to `-1` and also supports searching list based key-value pairs) - which makes it a great fit for parsing large amounts of JSON efficiently, and getting what we need.
