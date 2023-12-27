@@ -6,12 +6,13 @@
 
 ### System Requirements
 - Go `1.21`
+- `make` utility - install with `brew install make` on MacOS.
 - Environment variables for correct usage of go are set, such as `GOROOT`, `GOPATH` and `GO111MODULE=on` (default)
 - Tested on `Mac Sonoma M1`. Should work fine with any `darwin-arm64` architecture.
 
 ### Usage Instructions
 - Open command line in root directory of this repo.
-- Run `make build`
+- Run `make build` - this will generate the cli as a binary in `bin/darwin-arm64`
 - Then run `make setup`, this will move the `cli` executable to current director
 - To make it easier, a copy of `cli` executable is left in the root directory, for being able to run directly.
 
@@ -21,7 +22,7 @@
 #### Searching
 - Searching cane be done via `./cli search` command. Type `--help` to see usage
 - To search for empty fields, don't specify `--value` flag, as the CLI then treats it as empty string (**NOTE**: be careful they are empty strings, for values that require integers, it will still error saying you need to specify int value, as empty value cannot be int)
-- Eg: `cli search user --name _id --value 1` searches for user with `_id` attribute as `1`, shows output:
+- Eg: `./cli search user --name _id --value 1` searches for user with `_id` attribute as `1`, shows output:
 ```
 ======== All results ========
 ------------------------------------------------
