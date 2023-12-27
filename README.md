@@ -6,12 +6,13 @@
 
 ### System Requirements
 - Go `1.21`
+- `make` utility - install with `brew install make` on MacOS.
 - Environment variables for correct usage of go are set, such as `GOROOT`, `GOPATH` and `GO111MODULE=on` (default)
 - Tested on `Mac Sonoma M1`. Should work fine with any `darwin-arm64` architecture.
 
 ### Usage Instructions
 - Open command line in root directory of this repo.
-- Run `make build`
+- Run `make build` - this will generate the cli as a binary in `bin/darwin-arm64`
 - Then run `make setup`, this will move the `cli` executable to current director
 - To make it easier, a copy of `cli` executable is left in the root directory, for being able to run directly.
 
@@ -21,7 +22,7 @@
 #### Searching
 - Searching cane be done via `./cli search` command. Type `--help` to see usage
 - To search for empty fields, don't specify `--value` flag, as the CLI then treats it as empty string (**NOTE**: be careful they are empty strings, for values that require integers, it will still error saying you need to specify int value, as empty value cannot be int)
-- Eg: `cli search user --name _id --value 1` searches for user with `_id` attribute as `1`, shows output:
+- Eg: `./cli search user --name _id --value 1` searches for user with `_id` attribute as `1`, shows output:
 ```
 ======== All results ========
 ------------------------------------------------
@@ -52,7 +53,7 @@ tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. De
 ```
 ### Testing Instructions
 - Run `make test`
-- All tests are defined within the individual packages themselves
+- All tests are defined within the individual packages themselves. Built by following TDD approach.
 - For test coverage, run `make coverage`, see output below:
 ```
 go tool cover -func profile.cov               
@@ -90,6 +91,9 @@ ZendeskChallenge/models/users/users.go:97:                      Fetch           
 total:                                                          (statements)                    90.0%
 ```
 ### Design tradeoffs
+#### Building CLI Interface
+- `cobra` was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
+
 #### Searching through JSON
 1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc.) - which makes it a great fit for parsing large amounts of JSON and getting what we need.
    1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal.
@@ -107,8 +111,7 @@ total:                                                          (statements)    
    1. Assignee name and submitter name is shown
    2. Organization name is shown
 
-
-### Package structure
+#### Package structure
 1. Packages have been divided as follows for proper separation of concerns, extensibility and testing
    1. `cmd` - For defining all CLI commands
       1. `list` - For handling list command
