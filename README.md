@@ -52,7 +52,7 @@ tickets_0: Ipsum reprehenderit non ea officia labore aute. Qui sit aliquip ipsum
 tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. Deserunt irure deserunt ea nulla cillum ad.
 ```
 ### Testing Instructions
-All features (CLI, models, search evaluation/processing) have been thoroughly tested. To run tests follow these steps:
+All features (CLI, models, search evaluation/processing, internal utilities) have been thoroughly tested. To run tests follow these steps:
 
 1. Run `make test`
 2. All tests are defined within the individual packages themselves. Built by following TDD approach.
