@@ -91,6 +91,9 @@ ZendeskChallenge/models/users/users.go:97:                      Fetch           
 total:                                                          (statements)                    90.0%
 ```
 ### Design tradeoffs
+#### Building CLI Interface
+- `cobra` was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
+
 #### Searching through JSON
 1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc.) - which makes it a great fit for parsing large amounts of JSON and getting what we need.
    1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal.
