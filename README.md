@@ -16,6 +16,7 @@
 - Then run `make setup`, this will move the `cli` executable to current director
 - To make it easier, a copy of `cli` executable is left in the root directory, for being able to run directly.
 
+
 #### Listing searchable fields
 - Run `./cli list` for getting all possible searchable fields
 
@@ -51,7 +52,8 @@ signature: Don't Worry Be Happy!
 tickets_0: Ipsum reprehenderit non ea officia labore aute. Qui sit aliquip ipsum nostrud anim qui pariatur ut anim aliqua non aliqua.
 tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. Deserunt irure deserunt ea nulla cillum ad.
 ```
-##### Gotchas / Catches
+
+#### Gotchas / Catches
 1. ***Searching for list based items (`tags`, `domain_names` etc.)***
    1. These are searchable by specifying one single value only, not a list of values. Eg. if you want to search users, where one of the tags is `abc` you would run the command:
       `./cli search user --name tags --value abc`
@@ -64,9 +66,11 @@ tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. De
       2. False values: `0`, `f`, `F`, `FALSE`, `false`, `False`
 
 ### Testing Instructions
-- Run `make test`
-- All tests are defined within the individual packages themselves. Built by following TDD approach.
-- For test coverage, run `make coverage`, see output below:
+All features (CLI, models, search evaluation/processing, internal utilities) have been thoroughly tested. To run tests follow these steps:
+
+1. Run `make test`
+2. All tests are defined within the individual packages themselves. Built by following TDD approach.
+3. For test coverage, run `make coverage`, see output below:
 ```
 go tool cover -func profile.cov               
 ZendeskChallenge/cmd/list/handler.go:14:                        NewListCmd                      100.0%
@@ -104,10 +108,10 @@ total:                                                          (statements)    
 ```
 ### Design tradeoffs
 #### Building CLI Interface
-- `cobra` was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
+- [`cobra`](https://github.com/spf13/cobra) was used for developing go based CLI , due to its conciseness, ease of testability and development speed.
 
 #### Searching through JSON
-1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc.) - which makes it a great fit for parsing large amounts of JSON and getting what we need.
+1. For searching through JSON efficiently, `JSONPath` query language (similar to `XPath` for XML) was used. It is quite efficient, and more about it can be read [here](https://goessner.net/articles/JsonPath/) . Some other benefits being keeping code simpler, it also allows complex arithmetic operations (like `OR` and `AND` , `gt`, `lt`, etc. such as comparing if element exists in list or not by comparing to `-1` and also supports searching list based key-value pairs) - which makes it a great fit for parsing large amounts of JSON efficiently, and getting what we need.
    1. Other possible considerations were converting whole data model to `Trie` and then searching through it, which would still not be as efficient, due to the fact that user input can be one of many fields, making Trie have too many options and hence not the most optimal.
    2. `JSONPath` parser in go is used from [ojq](https://github.com/ohler55/ojg) installable as `go` module.
       1. Similar to `XPath` it relies on a tree representation of document, making it much quicker to locate certain items and jump straight to them (than say storing them as a list and performing sorting / searching operations like binary search would.)
@@ -129,7 +133,7 @@ total:                                                          (statements)    
       1. `list` - For handling list command
       2. `search` - For handling search command, and related processing
    2. `internal` - For generic methods / interfaces used throughout the application
-   3. `model` - For defining the entities and their structures, to operate and process, ability to define separately and extend as needed.
+   3. `models` - For defining the entities and their structures, to operate and process, ability to define separately and extend as needed.
 
-![Build Status](assets/structure.png)
+![Package structure](assets/structure.png)
 
