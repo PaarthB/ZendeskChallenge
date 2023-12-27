@@ -15,8 +15,6 @@ GOEXE       ?= $(shell GOOS=$(GOOS) go env GOEXE)
 GOCMD   	?=  go
 GOBUILD = $(GOCMD) build
 
-VENV_NAME?=venv
-PYTHON=$(VENV_NAME)/bin/python
 
 ###################################################################################################
 
@@ -72,6 +70,7 @@ default: build
 .PHONY: build
 build: $(BINDIR)/$(EXEC)
 
+
 .PHONY: clean
 clean:
 	-rm -f $(BINDIR)/$(EXEC)
@@ -80,15 +79,8 @@ clean:
 
 .PHONY: test
 test:
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go test -race ./...
+	TEST_ENV=true GOOS=$(GOOS) GOARCH=$(GOARCH) go test -coverpkg= ./... -v
 
-.PHONY: check-formatting
-check-formatting:
-	bash scripts/check-formatting.sh
-
-.PHONY: format
-format:
-	bash scripts/format.sh
 
 ###################################################################################################
 
@@ -161,3 +153,6 @@ bundle-release: $(PLUGIN_RELEASE_BUNDLE)
 .PHONY: release
 
 release: bundle-release
+
+setup:
+	cp $(BINDIR)/$(EXEC) .

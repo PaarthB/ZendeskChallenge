@@ -1,3 +1,9 @@
+// Package search -
+//
+// This is the entry point of various search queries - user / ticket / organization, each of which invoke different
+// entry-points. The source of data is read from real JSON files for users and from testdata files for tests
+//
+
 package search
 
 import (
@@ -9,6 +15,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
+	"strconv"
 )
 
 const (
@@ -17,30 +24,36 @@ const (
 	OrganizationsFile = "organizations.json"
 )
 
-func triggerUserSearch(cmd *cobra.Command, args []string) {
-	value, err := cmd.Flags().GetString("value")
-	var data, _ = os.ReadFile(UsersFile)
-	var orgData, _ = os.ReadFile(OrganizationsFile)
-	var ticketData, _ = os.ReadFile(TicketsFile)
+func getFileData(fileName string) ([]byte, error) {
+	isTest, err := strconv.ParseBool(os.Getenv("TEST_ENV"))
+	var prefixPath string
+	if err == nil && isTest {
+		prefixPath = "testdata/"
+	}
+	return os.ReadFile(prefixPath + fileName)
+}
+
+func triggerUserSearch(cmd *cobra.Command, args []string) error {
+	var data, _ = getFileData(UsersFile)
+	var orgData, _ = getFileData(OrganizationsFile)
+	var ticketData, _ = getFileData(TicketsFile)
 	// Declaration of the instance of the struct that we want to fill
 	var allUsers users.User
 	// Fill the instance from the JSON file content
-	err = json.Unmarshal(data, &allUsers)
+	err := json.Unmarshal(data, &allUsers)
 	if err != nil {
 		log.Errorf("error %v", err)
 		cmd.PrintErrf("error %v", err)
-		return
+		return err
 	}
 	userData := users.UserData{
 		Raw:       data,
 		Processed: allUsers,
 	}
-	name, err := cmd.Flags().GetString("name")
-	if err != nil {
-		log.Errorf("error %v", err)
-		cmd.PrintErrf("error %v", err)
-		return
-	}
+
+	value, _ := cmd.Flags().GetString("value")
+	name, _ := cmd.Flags().GetString("name") // This is already validated by Cobra framework before reaching here
+
 	flags := users.UserFlags{
 		Name:  name,
 		Value: value,
@@ -49,38 +62,34 @@ func triggerUserSearch(cmd *cobra.Command, args []string) {
 	if err != nil {
 		cmd.PrintErr(err)
 		log.Errorf(err.Error())
-		return
+		return err
 	}
 	filteredUsers := result.FetchFiltered().(users.User)
 	addRelatedUserEntities(filteredUsers, orgData, ticketData)
-	internal.DisplayResults(cmd, result.FetchFiltered(), users.KeyMappings)
+	internal.DisplayResults(cmd, filteredUsers, users.KeyMappings)
 	log.Debugf("All results displayed")
+	return nil
 }
 
-func triggerTicketSearch(cmd *cobra.Command, args []string) {
-	value, err := cmd.Flags().GetString("value")
-	var data, _ = os.ReadFile(TicketsFile)
-	var orgData, _ = os.ReadFile(OrganizationsFile)
-	var userData, _ = os.ReadFile(UsersFile)
+func triggerTicketSearch(cmd *cobra.Command, args []string) error {
+	var data, _ = getFileData(TicketsFile)
+	var orgData, _ = getFileData(OrganizationsFile)
+	var userData, _ = getFileData(UsersFile)
 	// Declaration of the instance of the struct that we want to fill
 	var allTickets tickets.Ticket
 	// Fill the instance from the JSON file content
-	err = json.Unmarshal(data, &allTickets)
+	err := json.Unmarshal(data, &allTickets)
 	if err != nil {
 		log.Errorf("here!! error %v", err)
 		cmd.PrintErrf("error %v", err)
-		return
+		return err
 	}
 	ticketData := tickets.TicketData{
 		Raw:       data,
 		Processed: allTickets,
 	}
-	name, err := cmd.Flags().GetString("name")
-	if err != nil {
-		log.Errorf("error %v", err)
-		cmd.PrintErrf("error %v", err)
-		return
-	}
+	value, _ := cmd.Flags().GetString("value")
+	name, _ := cmd.Flags().GetString("name") // This is already validated by Cobra framework before reaching here
 	flags := tickets.TicketFlags{
 		Name:  name,
 		Value: value,
@@ -89,36 +98,32 @@ func triggerTicketSearch(cmd *cobra.Command, args []string) {
 	if err != nil {
 		cmd.PrintErr(err)
 		log.Errorf(err.Error())
-		return
+		return err
 	}
 	filteredTickets := result.FetchFiltered().(tickets.Ticket)
 	addRelatedTicketEntities(filteredTickets, orgData, userData)
-	internal.DisplayResults(cmd, result.FetchFiltered(), tickets.KeyMappings)
-	log.Debugf("All results displayed")
+	internal.DisplayResults(cmd, filteredTickets, tickets.KeyMappings)
+	log.Info("All results displayed")
+	return nil
 }
 
-func triggerOrgSearch(cmd *cobra.Command, args []string) {
-	value, err := cmd.Flags().GetString("value")
-	var data, _ = os.ReadFile(OrganizationsFile)
+func triggerOrgSearch(cmd *cobra.Command, args []string) error {
+	var data, _ = getFileData(OrganizationsFile)
 	// Declaration of the instance of the struct that we want to fill
 	allOrgs := organizations.Organization{}
 	// Fill the instance from the JSON file content
-	err = json.Unmarshal(data, &allOrgs)
+	err := json.Unmarshal(data, &allOrgs)
 	if err != nil {
 		log.Errorf("error %v", err)
 		cmd.PrintErrf("error %v", err)
-		return
+		return err
 	}
 	orgData := organizations.OrgData{
 		Raw:       data,
 		Processed: allOrgs,
 	}
-	name, err := cmd.Flags().GetString("name")
-	if err != nil {
-		log.Errorf("error %v", err)
-		cmd.PrintErrf("error %v", err)
-		return
-	}
+	value, _ := cmd.Flags().GetString("value")
+	name, _ := cmd.Flags().GetString("name") // This is already validated by Cobra framework before reaching here
 	flags := organizations.OrganizationFlags{
 		Name:  name,
 		Value: value,
@@ -127,8 +132,9 @@ func triggerOrgSearch(cmd *cobra.Command, args []string) {
 	if err != nil {
 		cmd.PrintErr(err)
 		log.Errorf(err.Error())
-		return
+		return err
 	}
 	internal.DisplayResults(cmd, result.FetchFiltered(), organizations.KeyMappings)
-	log.Debugf("All results displayed")
+	log.Info("All results displayed")
+	return nil
 }

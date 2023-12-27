@@ -1,3 +1,6 @@
+// Package tickets -
+//
+// Defines the ticket model and its key fields. Implements DataStore and DataProcessor interfaces
 package tickets
 
 import (
@@ -9,7 +12,7 @@ type Ticket []struct {
 	Id               string   `json:"_id"`
 	ExternalId       string   `json:"external_id"`
 	Type             string   `json:"type"`
-	Description      string   `json:"description"`
+	Description      string   `json:"description,omitempty"`
 	Priority         string   `json:"priority"`
 	Status           string   `json:"status"`
 	Subject          string   `json:"subject"`

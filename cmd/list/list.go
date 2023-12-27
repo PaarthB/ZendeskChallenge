@@ -1,3 +1,8 @@
+// Package list -
+//
+// Defines the single entry-point for displaying all possible searchable fields under the 'list' command
+//
+
 package list
 
 import (
@@ -7,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func fieldList(cmd *cobra.Command, args []string) {
+func fieldList(cmd *cobra.Command, args []string) error {
 	cmd.Print("Searchable user fields with 'search user' command")
 	cmd.Print("\n--------------------------------------------\n")
 	for field := range users.KeyMappings {
@@ -23,4 +28,5 @@ func fieldList(cmd *cobra.Command, args []string) {
 	for field := range tickets.KeyMappings {
 		cmd.Printf("%v\n", field)
 	}
+	return nil
 }

@@ -1,3 +1,8 @@
+// Package search -
+//
+// Defines all the commands for searching, and which entrypoints to invoke for them
+//
+
 package search
 
 import (
@@ -21,7 +26,7 @@ func NewUserSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "user",
 		Short: "trigger user search",
-		Run:   triggerUserSearch,
+		RunE:  triggerUserSearch,
 	}
 
 	cmd.PersistentFlags().String("name", "", "The name of the field to search for.")
@@ -34,8 +39,8 @@ func NewUserSearchCmd() *cobra.Command {
 func NewTicketSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ticket",
-		Short: "Trigger user search",
-		Run:   triggerTicketSearch,
+		Short: "trigger ticket search",
+		RunE:  triggerTicketSearch,
 	}
 
 	cmd.PersistentFlags().String("name", "", "The name of the field to search for.")
@@ -48,8 +53,8 @@ func NewTicketSearchCmd() *cobra.Command {
 func NewOrgSearchCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "organization",
-		Short: "Trigger organization search",
-		Run:   triggerOrgSearch,
+		Short: "trigger organization search",
+		RunE:  triggerOrgSearch,
 	}
 
 	cmd.PersistentFlags().String("name", "", "The name of the field to search for.")

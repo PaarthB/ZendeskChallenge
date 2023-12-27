@@ -1,3 +1,7 @@
+// Package search -
+//
+// This file is meant for processing of all search queries, and is where most of the heavy-lifting of storage
+// and data processing is done
 package search
 
 import (
@@ -11,7 +15,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/ohler55/ojg/jp"
 	"github.com/ohler55/ojg/oj"
-	log "github.com/sirupsen/logrus"
 	"reflect"
 	"strconv"
 )
@@ -97,7 +100,8 @@ func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map
 	var value = reflect.ValueOf(flags).FieldByName("Value").String()
 	err := validate.Struct(flags)
 	if err != nil {
-		return nil, errors.New("validation failed. Please ensure the right field is passed in 'name' field")
+		return nil, errors.New(fmt.Sprintf("Invalid value specified for field --name: '%v'. "+
+			"Please use 'list' command to find the valid fields which can be searched for", name))
 	}
 	val := reflect.ValueOf(data.FetchProcessed()[0]) // Get property value from one object to find field type
 	field := val.FieldByName(mappings[name])
@@ -111,7 +115,7 @@ func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map
 func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, data internal.DataProcessor) (internal.DataProcessor, error) {
 	switch fieldKind {
 	case reflect.Int:
-		log.Printf("VAL %v", value)
+		//log.Printf("VAL %v", value)
 		_, err := strconv.ParseInt(value, 10, 64)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Please specify int type of --value associated with --name of %v\n", name))

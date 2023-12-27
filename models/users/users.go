@@ -1,3 +1,8 @@
+// Package users -
+//
+// Defines the users model and its key fields. Implements DataStore and DataProcessor interfaces
+//
+
 package users
 
 import (
@@ -7,11 +12,11 @@ import (
 
 type User []struct {
 	Id               int      `json:"_id"`
-	Alias            string   `json:"alias"`
+	Alias            string   `json:"alias,omitempty"`
 	ExternalId       string   `json:"external_id"`
 	Name             string   `json:"name"`
 	Signature        string   `json:"signature"`
-	Email            string   `json:"email"`
+	Email            string   `json:"email,omitempty"`
 	Phone            string   `json:"phone"`
 	Role             string   `json:"role"`
 	Locale           string   `json:"locale"`
@@ -22,7 +27,7 @@ type User []struct {
 	Suspended        bool     `json:"suspended"`
 	Active           bool     `json:"active"`
 	Verified         bool     `json:"verified"`
-	OrganizationId   int      `json:"organization_id"`
+	OrganizationId   int      `json:"organization_id,omitempty"`
 	Tags             []string `json:"tags"`
 	OrganizationName string   `json:",omitempty"`
 	Tickets          []string `json:",omitempty"`

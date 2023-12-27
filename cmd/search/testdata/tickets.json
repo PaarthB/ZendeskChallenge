@@ -1,5 +1,28 @@
 [
   {
+    "_id": "test_id",
+    "url": "http://initech.zendesk.com/api/v2/tickets/20615fe1-765b-4ff5-b4f6-ea42dcc8cac3.json",
+    "external_id": "6eb322af-abdb-4f71-a0a2-f7f6fbe72815",
+    "created_at": "2016-03-25T05:33:29 -11:00",
+    "type": "task",
+    "subject": "A Problem in Gambia",
+    "description": "test description 1",
+    "priority": "high",
+    "status": "pending",
+    "submitter_id": 22,
+    "assignee_id": 43,
+    "organization_id": 102,
+    "tags": [
+      "Washington",
+      "Wyoming",
+      "Ohio",
+      "Pennsylvania"
+    ],
+    "has_incidents": false,
+    "due_at": "2016-08-22T04:49:19 -10:00",
+    "via": "web"
+  },
+  {
     "_id": "20615fe1-765b-4ff5-b4f6-ea42dcc8cac3",
     "url": "http://initech.zendesk.com/api/v2/tickets/20615fe1-765b-4ff5-b4f6-ea42dcc8cac3.json",
     "external_id": "6eb322af-abdb-4f71-a0a2-f7f6fbe72815",

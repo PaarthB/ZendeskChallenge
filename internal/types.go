@@ -1,3 +1,7 @@
+// Package internal -
+//
+// Defines all essential interfaces that multiple underlying models implement, to make code simple and concise,
+// and conform to standards.
 package internal
 
 type DataProcessor interface {

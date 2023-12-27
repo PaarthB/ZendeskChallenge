@@ -20,7 +20,21 @@ import (
 // functionality from testify - including a T() method which
 // returns the current testing context
 
-func getSampleOrgData() organizations.OrgData {
+type TestSuite struct {
+	suite.Suite
+	orgRaw     []byte
+	userRaw    []byte
+	ticketRaw  []byte
+	orgData    organizations.OrgData
+	userData   users.UserData
+	ticketData tickets.TicketData
+}
+
+func TestProcessSuite(t *testing.T) {
+	suite.Run(t, new(TestSuite))
+}
+
+func GetSampleOrgData() organizations.OrgData {
 	data, _ := os.ReadFile("testdata/organizations.json")
 	var allOrgs organizations.Organization
 	// Fill the instance from the JSON file content
@@ -32,7 +46,7 @@ func getSampleOrgData() organizations.OrgData {
 	}
 }
 
-func getSampleTicketData() tickets.TicketData {
+func GetSampleTicketData() tickets.TicketData {
 	data, _ := os.ReadFile("testdata/tickets.json")
 	var allTickets tickets.Ticket
 	// Fill the instance from the JSON file content
@@ -44,7 +58,7 @@ func getSampleTicketData() tickets.TicketData {
 	}
 }
 
-func getSampleUserData() users.UserData {
+func GetSampleUserData() users.UserData {
 	data, _ := os.ReadFile("testdata/users.json")
 	var allUsers users.User
 	// Fill the instance from the JSON file content
@@ -56,36 +70,9 @@ func getSampleUserData() users.UserData {
 	}
 }
 
-type TestSuite struct {
-	suite.Suite
-	orgData    organizations.OrgData
-	userData   users.UserData
-	ticketData tickets.TicketData
-}
-
-func TestProcessSuite(t *testing.T) {
-	suite.Run(t, new(TestSuite))
-}
-
-func (suite *TestSuite) SetupSuite() {
-	suite.orgData = getSampleOrgData()
-	suite.ticketData = getSampleTicketData()
-	suite.userData = getSampleUserData()
-}
-
 // this function executes after all tests executed
 func (suite *TestSuite) TearDownSuite() {
 	fmt.Println(">>> From TearDownSuite")
-}
-
-func (suite *TestSuite) SetupTest() {
-	// reset StartingNumber to one
-	fmt.Println("-- From SetupTest")
-}
-
-// this function executes after each test case
-func (suite *TestSuite) TearDownTest() {
-	fmt.Println("-- From TearDownTest")
 }
 
 func (suite *TestSuite) TestAddRelatedUserEntities() {
@@ -149,8 +136,7 @@ func (suite *TestSuite) TestAddRelatedUserEntities() {
 
 	for _, tt := range testsSuccess {
 		suite.Run(tt.title, func() {
-			//suite.Nil(tt.data.FetchFiltered()) // No filtered results prior to search
-			for i, _ := range tt.users { // Related entities all null before search
+			for i := range tt.users { // Related entities all null before search
 				suite.Empty(tt.users[i].Tickets)
 				suite.Empty(tt.users[i].OrganizationName)
 			}
@@ -225,7 +211,7 @@ func (suite *TestSuite) TestAddRelatedTicketEntities() {
 	for _, tt := range testsSuccess {
 		suite.Run(tt.title, func() {
 			//suite.Nil(tt.data.FetchFiltered()) // No filtered results prior to search
-			for i, _ := range tt.tickets { // Related entities all null before search
+			for i := range tt.tickets { // Related entities all null before search
 				suite.Empty(tt.tickets[i].SubmitterName)
 				suite.Empty(tt.tickets[i].AssigneeName)
 				suite.Empty(tt.tickets[i].OrganizationName)
@@ -243,7 +229,50 @@ func (suite *TestSuite) TestAddRelatedTicketEntities() {
 	}
 }
 
-func (suite *TestSuite) TestEvaluateSearchSuccess() {
+func (suite *TestSuite) TestEvaluateSearch_Error() {
+	testsError := []struct {
+		title        string
+		data         internal.DataProcessor
+		mappings     map[string]string
+		flags        interface{}
+		errorMessage string
+	}{
+		{
+			title:        "evaluate org search - pass invalid field to search for",
+			data:         &suite.orgData,
+			errorMessage: "Invalid value specified for field --name: 'invalid_field'. Please use 'list' command to find the valid fields which can be searched for",
+			mappings:     organizations.KeyMappings,
+			flags:        organizations.OrganizationFlags{Name: "invalid_field", Value: "121"},
+		},
+		{
+			title:        "evaluate user search - pass invalid field to search for",
+			mappings:     users.KeyMappings,
+			data:         &suite.userData,
+			errorMessage: "Invalid value specified for field --name: 'random field'. Please use 'list' command to find the valid fields which can be searched for",
+			flags:        users.UserFlags{Name: "random field", Value: "74"},
+		},
+		{
+			title:        "evaluate ticket search - pass invalid field to search for",
+			mappings:     tickets.KeyMappings,
+			errorMessage: "Invalid value specified for field --name: 'useless field'. Please use 'list' command to find the valid fields which can be searched for",
+			data:         &suite.ticketData,
+			flags:        tickets.TicketFlags{Name: "useless field", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
+		},
+	}
+
+	for _, tt := range testsError {
+		suite.Run(tt.title, func() {
+			suite.Nil(tt.data.FetchFiltered()) // No filtered results prior to search
+			val, err := evaluateSearch(tt.flags, tt.data, tt.mappings)
+			suite.NotNil(err)
+			suite.Nil(val)
+			suite.Equal(tt.errorMessage, err.Error())
+			suite.Nil(tt.data.FetchFiltered()) // Filtered results remain nil as error occurred
+		})
+	}
+
+}
+func (suite *TestSuite) TestEvaluateSearch_Success() {
 	testsSuccess := []struct {
 		title    string
 		data     internal.DataProcessor
@@ -266,7 +295,7 @@ func (suite *TestSuite) TestEvaluateSearchSuccess() {
 			data:     &suite.userData,
 			count:    1,
 			dataType: "*users.UserData",
-			flags:    users.UserFlags{Name: "_id", Value: "75"},
+			flags:    users.UserFlags{Name: "_id", Value: "74"},
 		},
 		{
 			title:    "evaluate ticket search",
@@ -285,11 +314,60 @@ func (suite *TestSuite) TestEvaluateSearchSuccess() {
 			suite.Nil(err)
 			suite.NotNil(val)
 			suite.Equal(reflect.TypeOf(val).String(), tt.dataType)
+			suite.NotNil(tt.data.FetchFiltered()) // Filtered is set after successful search
+			suite.Equal(len(val.FetchFiltered().Fetch()), tt.count)
 		})
 	}
 }
 
-func (suite *TestSuite) TestEvaluateSearchResultByDataType() {
+func (suite *TestSuite) TestEvaluateSearchResultByDataType_Error() {
+	testsError := []struct {
+		fieldKind    reflect.Kind
+		title        string
+		name         string
+		value        string
+		data         internal.DataProcessor
+		count        int
+		errorMessage string
+	}{
+		{
+			title:        "Search by integer field but specifying invalid integer",
+			fieldKind:    reflect.Int,
+			value:        "invalid integer",
+			name:         "_id",
+			data:         &suite.orgData,
+			errorMessage: "Please specify int type of --value associated with --name of _id\n",
+		},
+		{
+			title:        "Search by bool field but specifying invalid bool",
+			fieldKind:    reflect.Bool,
+			value:        "invalid bool",
+			name:         "suspended",
+			data:         &suite.userData,
+			errorMessage: "Please specify bool type of --value associated with --name of suspended\n",
+		},
+		{
+			title:        "Invalid data type not supported by CLI",
+			fieldKind:    reflect.Pointer,
+			value:        "invalid bool",
+			name:         "suspended",
+			data:         &suite.userData,
+			errorMessage: "invalid data type not supported",
+		},
+	}
+
+	for _, tt := range testsError {
+		suite.Run(tt.title, func() {
+			suite.Nil(tt.data.FetchFiltered()) // No filtered results prior to search
+			val, err := evaluateSearchResultByDataType(tt.fieldKind, tt.value, tt.name, tt.data)
+			suite.NotNil(err) // Error has occurred
+			suite.Equal(tt.errorMessage, err.Error())
+			suite.Nil(val)                     // Error causes nil value to be returned
+			suite.Nil(tt.data.FetchFiltered()) // Results remain nil as error occurred
+		})
+	}
+}
+func (suite *TestSuite) TestEvaluateSearchResultByDataType_Success() {
 	testsSuccess := []struct {
 		fieldKind reflect.Kind
 		title     string

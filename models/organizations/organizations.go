@@ -1,3 +1,6 @@
+// Package organizations -
+//
+// Defines the organization model and its key fields. Implements DataStore and DataProcessor interfaces
 package organizations
 
 import (
