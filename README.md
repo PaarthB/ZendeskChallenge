@@ -16,6 +16,7 @@
 - Then run `make setup`, this will move the `cli` executable to current director
 - To make it easier, a copy of `cli` executable is left in the root directory, for being able to run directly.
 
+
 #### Listing searchable fields
 - Run `./cli list` for getting all possible searchable fields
 
@@ -51,6 +52,19 @@ signature: Don't Worry Be Happy!
 tickets_0: Ipsum reprehenderit non ea officia labore aute. Qui sit aliquip ipsum nostrud anim qui pariatur ut anim aliqua non aliqua.
 tickets_1: Nostrud veniam eiusmod reprehenderit adipisicing proident aliquip. Deserunt irure deserunt ea nulla cillum ad.
 ```
+
+#### Gotchas / Catches
+1. ***Searching for list based items (`tags`, `domain_names` etc.)***
+   1. These are searchable by specifying one single value only, not a list of values. Eg. if you want to search users, where one of the tags is `abc` you would run the command:
+      `./cli search user --name tags --value abc`
+2. ***Specifying values with spaces***:
+   1. These need to be enclosed with double quotes like:
+      `./cli search user --name tags --value "abc def"` if the tag you are searching for is called `abc def` 
+3. ***Specifying boolean values***
+   1. Searching for boolean values works in a few ways, the value can be:
+      1. True values: `1`, `t`, `T`, `TRUE`, `true`, `True` 
+      2. False values: `0`, `f`, `F`, `FALSE`, `false`, `False`
+
 ### Testing Instructions
 All features (CLI, models, search evaluation/processing, internal utilities) have been thoroughly tested. To run tests follow these steps:
 
