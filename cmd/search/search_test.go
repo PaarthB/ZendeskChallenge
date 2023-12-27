@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"reflect"
 	"strconv"
@@ -31,6 +32,22 @@ func (suite *TestSuite) SetupTest() {
 // this function executes after each test case
 func (suite *TestSuite) TearDownTest() {
 	fmt.Println("-- From TearDownTest")
+}
+
+func (suite *TestSuite) Test_getFileData() {
+	suite.Run("Testing test environment causes data to be read from different sources", func() {
+		_ = os.Unsetenv("TEST_ENV")
+		data1, err := getFileData(UsersFile)
+		suite.NotNil(err)
+		suite.Nil(data1)                        // Root data files not accessible in test execution
+		suite.IsType((*fs.PathError)(nil), err) // Assert correct error type thrown
+		_ = os.Setenv("TEST_ENV", "true")       // Set for using different file data source for tests
+		data2, err := getFileData(UsersFile)
+		suite.Nil(err)
+		suite.NotNil(data2)
+		suite.NotEqual(data1, data2, "Data is read from different sources if test environment is switched off/on")
+		suite.NotEmpty(data2, "Test data read is not empty")
+	})
 }
 
 func (suite *TestSuite) Test_ExecuteSearchCommand_Help() {
