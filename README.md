@@ -105,3 +105,12 @@ total:                                                          (statements)    
    2. Organization name is shown
 
 
+### Package structure
+1. Packages have been divided as follows for proper separation of concerns, extensibility and testing
+   1. `cmd` - For defining all CLI commands
+      1. `list` - For handling list command
+      2. `search` - For handling search command, and related processing
+   2. `internl` - For generic methods / interfaces used throughout the application
+   3. `model` - For defining the entities and their structures, to operate and process, ability to define separately and extend as needed.
+
+
