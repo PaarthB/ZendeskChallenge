@@ -2,7 +2,7 @@
 
 ![Build Status](https://raw.githubusercontent.com/dwyl/repo-badges/main/svg/build-passing.svg)
 ![Go version](https://img.shields.io/badge/Go_version-1.21-blue)
-![Code Coverage](https://img.shields.io/badge/Code_coverage-85.1_percent-b6d7a8)
+![Code Coverage](https://img.shields.io/badge/Code_coverage-90_percent-b6d7a8)
 
 ### System Requirements
 - Go / Golang version `1.21`
@@ -71,39 +71,39 @@ All features (CLI, models, search evaluation/processing, internal utilities) hav
 1. Run `make test`
 2. For test coverage, run `make coverage`, see output below:
 ```
-go tool cover -func profile.cov
+go tool cover -func profile.cov               
 ZendeskChallenge/cmd/list/handler.go:14:                        NewListCmd                      100.0%
 ZendeskChallenge/cmd/list/list.go:15:                           fieldList                       100.0%
-ZendeskChallenge/cmd/search/handler.go:14:                      NewSearchCmd                    100.0%
-ZendeskChallenge/cmd/search/handler.go:27:                      NewUserSearchCmd                100.0%
-ZendeskChallenge/cmd/search/handler.go:42:                      NewTicketSearchCmd              100.0%
-ZendeskChallenge/cmd/search/handler.go:57:                      NewOrgSearchCmd                 100.0%
-ZendeskChallenge/cmd/search/process.go:25:                      addRelatedUserEntities          100.0%
-ZendeskChallenge/cmd/search/process.go:63:                      addRelatedTicketEntities        100.0%
-ZendeskChallenge/cmd/search/process.go:105:                     evaluateSearch                  91.7%
-ZendeskChallenge/cmd/search/process.go:126:                     evaluateSearchResultByDataType  85.7%
-ZendeskChallenge/cmd/search/process.go:179:                     parseByDataType                 100.0%
-ZendeskChallenge/cmd/search/search.go:33:                       getFileData                     100.0%
-ZendeskChallenge/cmd/search/search.go:48:                       triggerUserSearch               73.9%
-ZendeskChallenge/cmd/search/search.go:92:                       triggerTicketSearch             73.9%
-ZendeskChallenge/cmd/search/search.go:134:                      triggerOrgSearch                68.4%
-ZendeskChallenge/internal/output.go:15:                         DisplayResults                  23.5%
-ZendeskChallenge/models/organizations/organizations.go:47:      FetchFiltered                   100.0%
-ZendeskChallenge/models/organizations/organizations.go:52:      SetFiltered                     85.7%
-ZendeskChallenge/models/organizations/organizations.go:64:      FetchProcessed                  100.0%
-ZendeskChallenge/models/organizations/organizations.go:73:      FetchRaw                        100.0%
-ZendeskChallenge/models/organizations/organizations.go:78:      Fetch                           100.0%
-ZendeskChallenge/models/tickets/tickets.go:62:                  SetFiltered                     85.7%
-ZendeskChallenge/models/tickets/tickets.go:74:                  FetchFiltered                   100.0%
-ZendeskChallenge/models/tickets/tickets.go:79:                  FetchProcessed                  100.0%
-ZendeskChallenge/models/tickets/tickets.go:88:                  FetchRaw                        100.0%
-ZendeskChallenge/models/tickets/tickets.go:93:                  Fetch                           100.0%
-ZendeskChallenge/models/users/users.go:71:                      SetFiltered                     85.7%
-ZendeskChallenge/models/users/users.go:83:                      FetchFiltered                   100.0%
-ZendeskChallenge/models/users/users.go:88:                      FetchProcessed                  100.0%
-ZendeskChallenge/models/users/users.go:97:                      FetchRaw                        100.0%
-ZendeskChallenge/models/users/users.go:102:                     Fetch                           100.0%
-total:                                                          (statements)                    85.1%
+ZendeskChallenge/cmd/search/handler.go:13:                      NewSearchCmd                    100.0%
+ZendeskChallenge/cmd/search/handler.go:25:                      NewUserSearchCmd                100.0%
+ZendeskChallenge/cmd/search/handler.go:39:                      NewTicketSearchCmd              100.0%
+ZendeskChallenge/cmd/search/handler.go:53:                      NewOrgSearchCmd                 100.0%
+ZendeskChallenge/cmd/search/process.go:22:                      addRelatedUserEntities          100.0%
+ZendeskChallenge/cmd/search/process.go:57:                      addRelatedTicketEntities        100.0%
+ZendeskChallenge/cmd/search/process.go:97:                      evaluateSearch                  91.7%
+ZendeskChallenge/cmd/search/process.go:115:                     evaluateSearchResultByDataType  85.7%
+ZendeskChallenge/cmd/search/process.go:161:                     parseByDataType                 100.0%
+ZendeskChallenge/cmd/search/search.go:27:                       getFileData                     100.0%
+ZendeskChallenge/cmd/search/search.go:36:                       triggerUserSearch               73.9%
+ZendeskChallenge/cmd/search/search.go:74:                       triggerTicketSearch             73.9%
+ZendeskChallenge/cmd/search/search.go:110:                      triggerOrgSearch                68.4%
+ZendeskChallenge/internal/output.go:14:                         DisplayResults                  100.0%
+ZendeskChallenge/models/organizations/organizations.go:46:      FetchFiltered                   100.0%
+ZendeskChallenge/models/organizations/organizations.go:50:      SetFiltered                     85.7%
+ZendeskChallenge/models/organizations/organizations.go:61:      FetchProcessed                  100.0%
+ZendeskChallenge/models/organizations/organizations.go:69:      FetchRaw                        100.0%
+ZendeskChallenge/models/organizations/organizations.go:73:      Fetch                           100.0%
+ZendeskChallenge/models/tickets/tickets.go:61:                  SetFiltered                     85.7%
+ZendeskChallenge/models/tickets/tickets.go:72:                  FetchFiltered                   100.0%
+ZendeskChallenge/models/tickets/tickets.go:76:                  FetchProcessed                  100.0%
+ZendeskChallenge/models/tickets/tickets.go:84:                  FetchRaw                        100.0%
+ZendeskChallenge/models/tickets/tickets.go:88:                  Fetch                           100.0%
+ZendeskChallenge/models/users/users.go:70:                      SetFiltered                     85.7%
+ZendeskChallenge/models/users/users.go:81:                      FetchFiltered                   100.0%
+ZendeskChallenge/models/users/users.go:85:                      FetchProcessed                  100.0%
+ZendeskChallenge/models/users/users.go:93:                      FetchRaw                        100.0%
+ZendeskChallenge/models/users/users.go:97:                      Fetch                           100.0%
+total:                                                          (statements)                    90.0%
 ```
 
 ### Design tradeoffs

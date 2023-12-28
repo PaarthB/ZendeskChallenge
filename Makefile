@@ -79,7 +79,7 @@ clean:
 
 .PHONY: test
 test:
-	TEST_ENV=true GOOS=$(GOOS) GOARCH=$(GOARCH) go test -coverprofile=profile.cov ./...
+	TEST_ENV=true GOOS=$(GOOS) GOARCH=$(GOARCH) go test -cover -coverpkg=./... -coverprofile=profile.cov ./... -v
 
 
 ###################################################################################################
