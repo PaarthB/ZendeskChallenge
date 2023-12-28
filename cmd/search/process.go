@@ -15,6 +15,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/ohler55/ojg/jp"
 	"github.com/ohler55/ojg/oj"
+	log "github.com/sirupsen/logrus"
 	"reflect"
 	"strconv"
 )
@@ -27,7 +28,11 @@ func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte)
 	var allTickets tickets.Ticket
 
 	// Fill the instance from the JSON file content
-	_, _ = json.Unmarshal(orgDataRaw, &allOrgs), json.Unmarshal(ticketDataRaw, &allTickets)
+	err1, err2 := json.Unmarshal(orgDataRaw, &allOrgs), json.Unmarshal(ticketDataRaw, &allTickets)
+	if err1 != nil || err2 != nil {
+		log.Errorf("Encountered error while unmarshalling JSON data for related tickets/orgs: %v , %v", err1, err2)
+		return
+	}
 	orgData := organizations.OrgData{
 		Raw:       orgDataRaw,
 		Processed: allOrgs,
@@ -37,14 +42,14 @@ func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte)
 		Processed: allTickets,
 	}
 	for i, u := range result {
-		obj, _ := parseByDataType(&orgData)
-		parseString, _ := jp.ParseString("$..[?(@._id==" + strconv.Itoa(u.OrganizationId) + ")].name")
+		obj, _ := parseRawDataByType(&orgData)
+		parseString, _ := jp.ParseString("$..[?(@._id==" + strconv.Itoa(u.OrganizationId) + ")].name") // JSONPath query to find org name with specific ID
 		org := parseString.Get(obj)
 		if len(org) > 0 {
 			u.OrganizationName = org[0].(string)
 		}
-		obj, _ = parseByDataType(&ticketsData)
-		parseString, _ = jp.ParseString("$..[?(@.submitter_id==" + strconv.Itoa(u.Id) + ")].description")
+		obj, _ = parseRawDataByType(&ticketsData)
+		parseString, _ = jp.ParseString("$..[?(@.submitter_id==" + strconv.Itoa(u.Id) + ")].description") // JSONPath query to find ticket description with specific submitter ID
 		relatedTickets := parseString.Get(obj)
 		if len(relatedTickets) > 0 {
 			var allTickets []string
@@ -63,7 +68,11 @@ func addRelatedUserEntities(result users.User, orgDataRaw, ticketDataRaw []byte)
 func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []byte) {
 	var allOrgs organizations.Organization
 	var allUsers users.User
-	_, _ = json.Unmarshal(orgDataRaw, &allOrgs), json.Unmarshal(userDataRaw, &allUsers)
+	err1, err2 := json.Unmarshal(orgDataRaw, &allOrgs), json.Unmarshal(userDataRaw, &allUsers)
+	if err1 != nil || err2 != nil {
+		log.Errorf("Encountered error while unmarshalling JSON data for related users/orgs: %v , %v", err1, err2)
+		return
+	}
 	orgData := organizations.OrgData{
 		Raw:       orgDataRaw,
 		Processed: allOrgs,
@@ -73,19 +82,19 @@ func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []
 		Processed: allUsers,
 	}
 	for i, ticket := range results {
-		obj, _ := parseByDataType(&orgData)
-		parseString, _ := jp.ParseString("$..[?(@._id==" + strconv.Itoa(ticket.OrganizationId) + ")].name")
+		obj, _ := parseRawDataByType(&orgData)
+		parseString, _ := jp.ParseString("$..[?(@._id==" + strconv.Itoa(ticket.OrganizationId) + ")].name") // JSONPath query to find org name with specific ID
 		org := parseString.Get(obj)
 		if len(org) > 0 {
 			ticket.OrganizationName = org[0].(string)
 		}
-		obj, _ = parseByDataType(&userData)
-		parseString, _ = jp.ParseString("$..[?(@._id==" + strconv.Itoa(ticket.SubmitterId) + ")].name")
+		obj, _ = parseRawDataByType(&userData)
+		parseString, _ = jp.ParseString("$..[?(@._id==" + strconv.Itoa(ticket.SubmitterId) + ")].name") // JSONPath query to find submitter name with specific ID
 		submitter := parseString.Get(obj)
 		if len(submitter) > 0 {
 			ticket.SubmitterName = submitter[0].(string)
 		}
-		parseString, _ = jp.ParseString("$..[?(@._id==" + strconv.Itoa(ticket.AssigneeId) + ")].name")
+		parseString, _ = jp.ParseString("$..[?(@._id==" + strconv.Itoa(ticket.AssigneeId) + ")].name") // JSONPath query to find assignee name with specific ID
 		assignee := parseString.Get(obj)
 		if len(assignee) > 0 {
 			ticket.AssigneeName = assignee[0].(string)
@@ -102,17 +111,16 @@ func addRelatedTicketEntities(results tickets.Ticket, orgDataRaw, userDataRaw []
 *
 *    @return error, DataProcessor: Error if any, and all consolidated search in DataProcessor object
  */
-func evaluateSearch(flags interface{}, data internal.DataProcessor, mappings map[string]string) (internal.DataProcessor, error) {
+func evaluateSearch(flags Flags, data internal.DataProcessor, mappings map[string]string) (internal.DataProcessor, error) {
 	validate := validator.New()
-	var name = reflect.ValueOf(flags).FieldByName("Name").String()
-	var value = reflect.ValueOf(flags).FieldByName("Value").String()
 	err := validate.Struct(flags)
 	if err != nil {
+		fmt.Printf("Invalid field passed in for --name. Please use 'list' command to find searchable fields")
 		return nil, err
 	}
 	val := reflect.ValueOf(data.FetchProcessed()[0]) // Get property value from one object to find field type
-	field := val.FieldByName(mappings[name])
-	result, err := evaluateSearchResultByDataType(field.Kind(), value, name, data)
+	field := val.FieldByName(mappings[flags.FetchName()])
+	result, err := evaluateSearchResultByDataType(field.Kind(), flags.FetchValue(), flags.FetchName(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -131,16 +139,16 @@ func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, 
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Please specify int type of --value associated with --name of %v\n", name))
 		} else {
-			obj, err := parseByDataType(data)
-			parseString, err := jp.ParseString("$..[?(@." + name + "==" + value + ")]")
+			obj, err := parseRawDataByType(data)
+			parseString, err := jp.ParseString("$..[?(@." + name + "==" + value + ")]") // JSONPath query to find all JSON objects with name == value (int)
 			if err != nil {
 				return nil, err
 			}
 			return data.SetFiltered(parseString.Get(obj))
 		}
 	case reflect.String:
-		obj, err := parseByDataType(data)
-		parseString, err := jp.ParseString("$..[?(@." + name + "==\"" + value + "\")]")
+		obj, err := parseRawDataByType(data)
+		parseString, err := jp.ParseString("$..[?(@." + name + "==\"" + value + "\")]") // JSONPath query to find all JSON objects with name == "value" (string)
 		if err != nil {
 			return nil, err
 		}
@@ -150,16 +158,16 @@ func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, 
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Please specify bool type of --value associated with --name of %v\n", name))
 		} else {
-			obj, err := parseByDataType(data)
-			parseString, err := jp.ParseString("$..[?(@." + name + "==" + strconv.FormatBool(parsedBool) + ")]")
+			obj, err := parseRawDataByType(data)
+			parseString, err := jp.ParseString("$..[?(@." + name + "==" + strconv.FormatBool(parsedBool) + ")]") // JSONPath query to find all JSON objects with name == value (bool)
 			if err != nil {
 				return nil, err
 			}
 			return data.SetFiltered(parseString.Get(obj))
 		}
 	case reflect.Slice:
-		obj, err := parseByDataType(data)
-		parseString, err := jp.ParseString("$[?('" + value + "' in @." + name + ")]")
+		obj, err := parseRawDataByType(data)
+		parseString, err := jp.ParseString("$[?('" + value + "' in @." + name + ")]") // JSONPath query to find all JSON objects with value in name (a list)
 		if err != nil {
 			return nil, err
 		}
@@ -176,13 +184,13 @@ func evaluateSearchResultByDataType(fieldKind reflect.Kind, value, name string, 
 *
 *	This allows method to be used interchangeably, making code simpler, and single responsibility.
  */
-func parseByDataType(data interface{}) (any, error) {
-	switch reflect.TypeOf(data).String() {
-	case "*users.UserData":
+func parseRawDataByType(data internal.DataProcessor) (any, error) {
+	switch data.(type) {
+	case *users.UserData:
 		return oj.Parse(data.(*users.UserData).Raw)
-	case "*tickets.TicketData":
+	case *tickets.TicketData:
 		return oj.Parse(data.(*tickets.TicketData).Raw)
-	case "*organizations.OrgData":
+	case *organizations.OrgData:
 		return oj.Parse(data.(*organizations.OrgData).Raw)
 	default:
 		return nil, errors.New(fmt.Sprintf("Invalid data type not supported: %v", reflect.TypeOf(data)))

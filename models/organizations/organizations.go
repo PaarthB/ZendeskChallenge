@@ -26,6 +26,14 @@ type OrgData struct {
 	Filtered  Organization
 }
 
+func (o OrganizationSearchFlags) FetchName() string {
+	return o.Name
+}
+
+func (o OrganizationSearchFlags) FetchValue() string {
+	return o.Value
+}
+
 var KeyMappings = map[string]string{
 	"_id":            "Id",
 	"url":            "Url",
@@ -38,7 +46,7 @@ var KeyMappings = map[string]string{
 	"tags":           "Tags",
 }
 
-type OrganizationFlags struct {
+type OrganizationSearchFlags struct {
 	Value string
 	Name  string `validate:"required,oneof=_id url external_id name domain_names details shared_tickets tickets"`
 }

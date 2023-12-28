@@ -1,6 +1,6 @@
 // Package internal -
 //
-// Defines all essential interfaces that multiple underlying models implement, to make code simple and concise,
+// Defines all essential interfaces that multiple underlying structs implement, to make code simple and concise,
 // and conform to standards.
 package internal
 

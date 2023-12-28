@@ -53,9 +53,17 @@ var KeyMappings = map[string]string{
 	"tags":            "Tags",
 }
 
-type TicketFlags struct {
+type TicketSearchFlags struct {
 	Value string
 	Name  string `validate:"required,oneof=_id external_id type description priority status subject created_at due_at submitter_id assignee_id has_incidents via tags organization_id"`
+}
+
+func (t TicketSearchFlags) FetchName() string {
+	return t.Name
+}
+
+func (t TicketSearchFlags) FetchValue() string {
+	return t.Value
 }
 
 // SetFiltered - Set the filtered list of Ticket, and return the parent struct (TicketData) they belong to

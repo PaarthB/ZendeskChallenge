@@ -62,9 +62,17 @@ var KeyMappings = map[string]string{
 	"tickets":           "Tickets",
 }
 
-type UserFlags struct {
+type UserSearchFlags struct {
 	Value string
 	Name  string `validate:"required,oneof=_id alias external_id name signature email phone role locale created_at last_login_at timezone details shared suspended active verified organization_id tags"`
+}
+
+func (u UserSearchFlags) FetchName() string {
+	return u.Name
+}
+
+func (u UserSearchFlags) FetchValue() string {
+	return u.Value
 }
 
 // SetFiltered - Set the filtered list of User, and return the parent struct (UserData) they belong to

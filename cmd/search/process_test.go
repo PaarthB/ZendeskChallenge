@@ -241,26 +241,26 @@ func (suite *TestSuite) TestEvaluateSearch_Error() {
 		title        string
 		data         internal.DataProcessor
 		mappings     map[string]string
-		flags        interface{}
+		flags        Flags
 		errorMessage string
 	}{
 		{
 			title:    "evaluate org search - pass invalid field to search for",
 			data:     &suite.orgData,
 			mappings: organizations.KeyMappings,
-			flags:    organizations.OrganizationFlags{Name: "invalid_field", Value: "121"},
+			flags:    organizations.OrganizationSearchFlags{Name: "invalid_field", Value: "121"},
 		},
 		{
 			title:    "evaluate user search - pass invalid field to search for",
 			mappings: users.KeyMappings,
 			data:     &suite.userData,
-			flags:    users.UserFlags{Name: "random field", Value: "74"},
+			flags:    users.UserSearchFlags{Name: "random field", Value: "74"},
 		},
 		{
 			title:    "evaluate ticket search - pass invalid field to search for",
 			mappings: tickets.KeyMappings,
 			data:     &suite.ticketData,
-			flags:    tickets.TicketFlags{Name: "useless field", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
+			flags:    tickets.TicketSearchFlags{Name: "useless field", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
 		},
 	}
 
@@ -274,40 +274,40 @@ func (suite *TestSuite) TestEvaluateSearch_Error() {
 			suite.Nil(tt.data.FetchFiltered())                   // Filtered results remain nil as error occurred
 		})
 	}
-
 }
+
 func (suite *TestSuite) TestEvaluateSearch_Success() {
 	testsSuccess := []struct {
 		title    string
 		data     internal.DataProcessor
 		mappings map[string]string
-		count    int
-		flags    interface{}
-		dataType string
+		count    int                    // number of results returned from search query
+		flags    Flags                  // user input flags
+		dataType internal.DataProcessor // data type being returned
 	}{
 		{
 			title:    "evaluate org search",
 			data:     &suite.orgData,
 			mappings: organizations.KeyMappings,
 			count:    1,
-			dataType: "*organizations.OrgData",
-			flags:    organizations.OrganizationFlags{Name: "_id", Value: "121"},
+			dataType: (*organizations.OrgData)(nil),
+			flags:    organizations.OrganizationSearchFlags{Name: "_id", Value: "121"},
 		},
 		{
 			title:    "evaluate user search",
 			mappings: users.KeyMappings,
 			data:     &suite.userData,
 			count:    1,
-			dataType: "*users.UserData",
-			flags:    users.UserFlags{Name: "_id", Value: "74"},
+			dataType: (*users.UserData)(nil),
+			flags:    users.UserSearchFlags{Name: "_id", Value: "74"},
 		},
 		{
 			title:    "evaluate ticket search",
 			mappings: tickets.KeyMappings,
 			data:     &suite.ticketData,
 			count:    1,
-			dataType: "*tickets.TicketData",
-			flags:    tickets.TicketFlags{Name: "_id", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
+			dataType: (*tickets.TicketData)(nil),
+			flags:    tickets.TicketSearchFlags{Name: "_id", Value: "7c67b6ed-6776-4065-bd4a-f2d9d12c33b7"},
 		},
 	}
 
@@ -315,11 +315,24 @@ func (suite *TestSuite) TestEvaluateSearch_Success() {
 		suite.Run(tt.title, func() {
 			suite.Nil(tt.data.FetchFiltered()) // No filtered results prior to search
 			val, err := evaluateSearch(tt.flags, tt.data, tt.mappings)
+			filtered := val.FetchFiltered().Fetch()
+			suite.Implements((*Flags)(nil), tt.flags) // Flags implement correct interface
 			suite.Nil(err)
 			suite.NotNil(val)
-			suite.Equal(reflect.TypeOf(val).String(), tt.dataType)
-			suite.NotNil(tt.data.FetchFiltered()) // Filtered is set after successful search
-			suite.Equal(len(val.FetchFiltered().Fetch()), tt.count)
+			suite.Equal(reflect.TypeOf(val), reflect.TypeOf(tt.dataType))
+			suite.IsType(tt.dataType, val)
+			suite.NotNil(tt.data.FetchFiltered())                   // Filtered is set after successful search
+			suite.Equal(len(val.FetchFiltered().Fetch()), tt.count) // Number of results as expected
+			for i := 0; i < len(filtered); i++ {                    // Ensure value returned is value specified
+				field := reflect.ValueOf(filtered[0]).FieldByName(tt.mappings[tt.flags.FetchName()])
+				switch field.Kind() {
+				case reflect.Int:
+					value, _ := strconv.ParseInt(tt.flags.FetchValue(), 10, 64)
+					suite.Equal(value, field.Int())
+				default:
+					suite.Equal(tt.flags.FetchValue(), field.String())
+				}
+			}
 		})
 	}
 }
@@ -428,8 +441,8 @@ func (suite *TestSuite) TestEvaluateSearchResultByDataType_Success() {
 			val, err := evaluateSearchResultByDataType(tt.fieldKind, tt.value, tt.name, tt.data)
 			suite.Nil(err)
 			suite.NotNil(val)
-			suite.NotNil(tt.data.FetchFiltered()) // Filtered is set after successful search
-			suite.Equal(len(val.FetchFiltered().Fetch()), tt.count)
+			suite.NotNil(tt.data.FetchFiltered())                   // Filtered is set after successful search
+			suite.Equal(len(val.FetchFiltered().Fetch()), tt.count) // Number of results as expected
 			for i := 0; i < len(val.FetchFiltered().Fetch()); i++ {
 				// The filtered value returned is same struct as the filtered value in original struct
 				suite.Equal(tt.data.FetchFiltered().Fetch()[i], val.FetchFiltered().Fetch()[i])
@@ -442,7 +455,7 @@ func (suite *TestSuite) TestEvaluateSearchResultByDataType_Success() {
 func (suite *TestSuite) TestParseDataType() {
 	testsSuccess := []struct {
 		name  string
-		data  interface{}
+		data  internal.DataProcessor
 		value []byte
 	}{
 		{
@@ -463,19 +476,19 @@ func (suite *TestSuite) TestParseDataType() {
 	}
 	testsFail := []struct {
 		name  string
-		data  interface{}
+		data  internal.DataProcessor
 		value []byte
 	}{
 		{
 			name:  "Parsing should throw error if random struct type is passed in",
-			data:  "random non-struct data",
+			data:  nil,
 			value: []byte(`Non JSON value`),
 		},
 	}
 
 	for _, tt := range testsSuccess {
 		suite.Run(tt.name, func() {
-			val1, err1 := parseByDataType(tt.data)
+			val1, err1 := parseRawDataByType(tt.data)
 			val2, err2 := oj.Parse(tt.value)
 			suite.Nil(err1)
 			suite.Nil(err2)
@@ -484,13 +497,13 @@ func (suite *TestSuite) TestParseDataType() {
 
 		for _, tt := range testsFail {
 			suite.Run(tt.name, func() {
-				val1, err1 := parseByDataType(tt.data)
+				val1, err1 := parseRawDataByType(tt.data)
 				val2, err2 := oj.Parse(tt.value)
 				suite.NotNil(err1)
 				suite.NotNil(err2)
 				suite.Nil(val1)
 				suite.Nil(val2)
-				suite.Equal(err1.Error(), "Invalid data type not supported: string")
+				suite.Equal("Invalid data type not supported: <nil>", err1.Error())
 				suite.IsType(err2, &oj.ParseError{})
 			})
 		}

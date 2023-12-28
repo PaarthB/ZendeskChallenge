@@ -54,7 +54,7 @@ func (suite *TestSuite) TearDownTest() {
 func (suite *TestSuite) TestTicket_Fetch() {
 	suite.Run("Test Fetch works as expected", func() {
 		suite.Equal(len(suite.ticket.Fetch()), 3)
-		for i, _ := range suite.ticket.Fetch() {
+		for i := range suite.ticket.Fetch() {
 			suite.Equal(suite.ticket.Fetch()[i], suite.ticket[i])
 		}
 	})
@@ -92,7 +92,7 @@ func (suite *TestSuite) TestTicketData_SetFiltered() {
 func (suite *TestSuite) TestTicketData_FetchProcessed() {
 	suite.Run("Test FetchProcessed works as expected", func() {
 		suite.Equal(len(suite.ticketData.FetchProcessed()), 3)
-		for i, _ := range suite.ticketData.FetchProcessed() {
+		for i := range suite.ticketData.FetchProcessed() {
 			suite.Equal(suite.ticketData.FetchProcessed()[i], suite.ticket[i])
 		}
 	})

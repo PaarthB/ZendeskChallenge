@@ -51,7 +51,7 @@ func (suite *TestSuite) TearDownTest() {
 func (suite *TestSuite) TestOrg_Fetch() {
 	suite.Run("Test Fetch works as expected", func() {
 		suite.Equal(len(suite.org.Fetch()), 3)
-		for i, _ := range suite.org.Fetch() {
+		for i := range suite.org.Fetch() {
 			suite.Equal(suite.org.Fetch()[i], suite.org[i])
 		}
 	})
@@ -89,7 +89,7 @@ func (suite *TestSuite) TestOrgData_SetFiltered() {
 func (suite *TestSuite) TestOrgData_FetchProcessed() {
 	suite.Run("Test FetchProcessed works as expected", func() {
 		suite.Equal(len(suite.orgData.FetchProcessed()), 3)
-		for i, _ := range suite.orgData.FetchProcessed() {
+		for i := range suite.orgData.FetchProcessed() {
 			suite.Equal(suite.orgData.FetchProcessed()[i], suite.org[i])
 		}
 	})

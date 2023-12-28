@@ -24,6 +24,12 @@ const (
 	OrganizationsFile = "organizations.json"
 )
 
+// Flags - Interface implemented by all models to allow easy retrieval of search flags, and use common data type
+type Flags interface {
+	FetchName() string
+	FetchValue() string
+}
+
 /*
 *		Get file data of specific file being queried.
 *		Method behaves differently in test environment to allow reading test files
@@ -53,24 +59,22 @@ func triggerUserSearch(cmd *cobra.Command, args []string) error {
 	var allUsers users.User
 	// Fill the instance from the JSON file content
 	err := json.Unmarshal(data, &allUsers)
-	if err != nil {
-		log.Errorf("error %v", err)
-		cmd.PrintErrf("error %v", err)
+	if err != nil || len(allUsers) == 0 {
+		cmd.PrintErrf("error occurred during parsing %v: %v, length of data: %v",
+			UsersFile, err, len(allUsers))
 		return err
 	}
 	userData := users.UserData{
 		Raw:       data,
 		Processed: allUsers,
 	}
-
 	value, _ := cmd.Flags().GetString("value")
 	name, _ := cmd.Flags().GetString("name") // This is already validated by Cobra framework before reaching here
-
-	flags := users.UserFlags{
+	flags := users.UserSearchFlags{
 		Name:  name,
 		Value: value,
 	}
-	result, err := evaluateSearch(flags, &userData, tickets.KeyMappings)
+	result, err := evaluateSearch(flags, &userData, users.KeyMappings)
 	if err != nil {
 		cmd.PrintErr(err)
 		log.Errorf(err.Error())
@@ -79,7 +83,7 @@ func triggerUserSearch(cmd *cobra.Command, args []string) error {
 	filteredUsers := result.FetchFiltered().(users.User)
 	addRelatedUserEntities(filteredUsers, orgData, ticketData)
 	internal.DisplayResults(cmd, filteredUsers, users.KeyMappings)
-	log.Debugf("All results displayed")
+	log.Infof("All results displayed")
 	return nil
 }
 
@@ -97,9 +101,9 @@ func triggerTicketSearch(cmd *cobra.Command, args []string) error {
 	var allTickets tickets.Ticket
 	// Fill the instance from the JSON file content
 	err := json.Unmarshal(data, &allTickets)
-	if err != nil {
-		log.Errorf("here!! error %v", err)
-		cmd.PrintErrf("error %v", err)
+	if err != nil || len(allTickets) == 0 {
+		cmd.PrintErrf("error occurred during parsing %v: %v, length of data: %v",
+			TicketsFile, err, len(allTickets))
 		return err
 	}
 	ticketData := tickets.TicketData{
@@ -108,7 +112,7 @@ func triggerTicketSearch(cmd *cobra.Command, args []string) error {
 	}
 	value, _ := cmd.Flags().GetString("value")
 	name, _ := cmd.Flags().GetString("name") // This is already validated by Cobra framework before reaching here
-	flags := tickets.TicketFlags{
+	flags := tickets.TicketSearchFlags{
 		Name:  name,
 		Value: value,
 	}
@@ -137,9 +141,9 @@ func triggerOrgSearch(cmd *cobra.Command, args []string) error {
 	allOrgs := organizations.Organization{}
 	// Fill the instance from the JSON file content
 	err := json.Unmarshal(data, &allOrgs)
-	if err != nil {
-		log.Errorf("error %v", err)
-		cmd.PrintErrf("error %v", err)
+	if err != nil || len(allOrgs) == 0 {
+		cmd.PrintErrf("error occurred during parsing %v: %v, length of data: %v",
+			OrganizationsFile, err, len(allOrgs))
 		return err
 	}
 	orgData := organizations.OrgData{
@@ -148,7 +152,7 @@ func triggerOrgSearch(cmd *cobra.Command, args []string) error {
 	}
 	value, _ := cmd.Flags().GetString("value")
 	name, _ := cmd.Flags().GetString("name") // This is already validated by Cobra framework before reaching here
-	flags := organizations.OrganizationFlags{
+	flags := organizations.OrganizationSearchFlags{
 		Name:  name,
 		Value: value,
 	}
