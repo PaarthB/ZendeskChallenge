@@ -18,9 +18,9 @@ func DisplayResults(cmd *cobra.Command, results DataStore, keyMappings map[strin
 		cmd.Print("Nothing to display")
 		return
 	}
-	var outputString = ""
 	for _, entity := range results.Fetch() {
 		cmd.Print("------------------------------------------------\n")
+		var outputString = ""
 		r := reflect.ValueOf(entity)
 		for key, val := range keyMappings {
 			field := r.FieldByName(val)
