@@ -27,6 +27,7 @@ type Ticket []struct {
 	SubmitterName    string   `json:",omitempty"`
 	AssigneeName     string   `json:",omitempty"`
 	OrganizationName string   `json:",omitempty"`
+	Url              string   `json:"url"`
 }
 
 type TicketData struct {
@@ -51,11 +52,12 @@ var KeyMappings = map[string]string{
 	"due_at":          "DueAt",
 	"via":             "Via",
 	"tags":            "Tags",
+	"url":             "Url",
 }
 
 type TicketSearchFlags struct {
 	Value string
-	Name  string `validate:"required,oneof=_id external_id type description priority status subject created_at due_at submitter_id assignee_id has_incidents via tags organization_id"`
+	Name  string `validate:"required,oneof=_id external_id type description priority status subject created_at due_at submitter_id assignee_id has_incidents via tags organization_id url"`
 }
 
 func (t TicketSearchFlags) FetchName() string {

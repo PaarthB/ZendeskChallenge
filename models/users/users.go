@@ -31,6 +31,7 @@ type User []struct {
 	Tags             []string `json:"tags"`
 	OrganizationName string   `json:",omitempty"`
 	Tickets          []string `json:",omitempty"`
+	Url              string   `json:"url"`
 }
 
 type UserData struct {
@@ -60,11 +61,12 @@ var KeyMappings = map[string]string{
 	"role":              "Role",
 	"organization_name": "OrganizationName",
 	"tickets":           "Tickets",
+	"url":               "Url",
 }
 
 type UserSearchFlags struct {
 	Value string
-	Name  string `validate:"required,oneof=_id alias external_id name signature email phone role locale created_at last_login_at timezone details shared suspended active verified organization_id tags"`
+	Name  string `validate:"required,oneof=_id alias external_id name signature email phone role locale created_at last_login_at timezone details shared suspended active verified organization_id tags url"`
 }
 
 func (u UserSearchFlags) FetchName() string {
